@@ -1,2 +1,2 @@
 # Misclassification-models
-Occupancy models that account for for false positive detections
+Occupancy models that account for misclassifications (false positive detections) and detection probability (false negatives) using R and the nimble package.
