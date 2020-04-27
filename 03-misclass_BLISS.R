@@ -1,6 +1,6 @@
 library (nimble)
 load("/scratch/brolek/fgsp_misclass/data/final-data.Rdata")
-#load( "C:\\Users\\rolek.brian\\Documents\\Projects\\FGSP Misclassification\\Data\\final-data.Rdata")
+#load( "C:\\Users\\rolek.brian\\Documents\\Projects\\FGSP Misclassification\\FINAL\\final-data.Rdata")
 code <- nimbleCode(
   {
     ## PRIORS 

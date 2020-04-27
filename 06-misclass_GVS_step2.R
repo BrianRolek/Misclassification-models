@@ -268,7 +268,7 @@ inits <- function()list (
   bg.sig=100
 ) 
 n.chains=6; n.thin=200; n.iter=600000; n.burnin=400000
-n.chains=3; n.thin=1; n.iter=200; n.burnin=100 # trial runs
+#n.chains=3; n.thin=1; n.iter=200; n.burnin=100 # trial runs
 
 mod <- list()
 mod<- nimbleModel(code, calculate=T, constants = datl[-1], 
