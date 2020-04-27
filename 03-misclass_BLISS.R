@@ -18,7 +18,7 @@ code <- nimbleCode(
     psi.b[1] <- logit(mean.psi)
     for (xx in 2:4) { b.b[xx] ~ dnorm(0, sd=100) }
     for (xx in 2:3) { p10.b[xx] ~ dnorm(0, sd=100) }
-    for (xx in 2:5) { p11.b[xx] ~ dnorm(0, sd=100) }
+    for (xx in 2) { p11.b[xx] ~ dnorm(0, sd=100) }
     
     for (t in 1:(nyear-1)){ 
       eps.phi[t] ~ dnorm(0, sd=sig.phi) 
@@ -116,7 +116,7 @@ code <- nimbleCode(
           for (j in 1:nvisit){
           # detection models
           logit(b[i,j,t]) <- b.b[1] + b.b[2]*date[i,j,t] + b.b[3]*date[i,j,t]*2+ b.b[4]*date[i,j,t]^3 
-          logit(p11[i,j,t]) <- p11.b[1] + p11.b[2]*date[i,j,t] + p11.b[3]*date[i,j,t]^2 + p11.b[4]*hr[i,j,t] + p11.b[5]*hr[i,j,t]^2 + eps.p11[t]
+          logit(p11[i,j,t]) <- p11.b[1] + p11.b[2]*hr[i,j,t] + eps.p11[t]
           logit(p10[i,j,t]) <- p10.b[1]  + p10.b[2]*date[i,j,t] + p10.b[3]*date[i,j,t]^2 + eps.p10[t]
         } } }# t j i
 
@@ -181,7 +181,7 @@ inits <- function()list (
   mean.b=runif(1),
   psi.b= runif(1, -5, 5),
   b.b= runif(4, -5, 5),
-  p11.b= runif(5, -5, 5),
+  p11.b= runif(2, -5, 5),
   p10.b= runif(3, -5, 5),
   mean.gamma= runif(1),
   mean.phi=runif(1),
