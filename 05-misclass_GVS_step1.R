@@ -1,4 +1,4 @@
-m <- "misclass_global_AP_GVS_simple_step1"
+m <- "05-misclass_GVS_step1"
 library (nimble)
 load("/scratch/brolek/fgsp_misclass/data/final-data.Rdata")
 

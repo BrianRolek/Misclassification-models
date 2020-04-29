@@ -1,4 +1,4 @@
-m <- "misclass_global_AP_GVS_simple_step2"
+m <- "06-misclass_GVS_step2"
 library (nimble)
 load("/scratch/brolek/fgsp_misclass/data/final-data.Rdata")
 load("/scratch/brolek/fgsp_misclass/outputs/misclass_global_AP_GVS_simple_step1_2020-04-16.Rdata")
@@ -237,7 +237,7 @@ inits <- function()list (
   mean.gamma= runif(1),
   mean.phi=runif(1),
   phi.alpha= runif(6, -5, 5),
-  gam.alpha= runif(6, -5, 5),
+  gam.alpha= runif(7, -5, 5),
   sig.p10=runif(1),
   sig.p11=runif(1),
   sig.phi=runif(1),
@@ -252,7 +252,7 @@ inits <- function()list (
   bg.sig=100
 ) 
 n.chains=6; n.thin=200; n.iter=600000; n.burnin=400000
-#n.chains=3; n.thin=1; n.iter=200; n.burnin=100 # trial runs
+n.chains=3; n.thin=1; n.iter=200; n.burnin=100 # trial runs
 
 mod <- list()
 mod<- nimbleModel(code, calculate=T, constants = datl[-1], 
