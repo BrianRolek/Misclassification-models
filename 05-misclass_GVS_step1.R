@@ -17,8 +17,6 @@ code <- nimbleCode(
     gam.alpha[1] <- logit(mean.gamma)
     mean.psi ~ dunif(0, 1)
     psi.b <- logit(mean.psi)
-    sig.phi ~ T(dnorm(0,10),0, ) 
-    sig.gam ~ T(dnorm(0,10),0, )
     sig.p10 ~ T(dnorm(0,10),0, )
     sig.p11 ~ T(dnorm(0,10),0, )
     bp.sig <- 100
@@ -73,9 +71,9 @@ code <- nimbleCode(
       phi.alpha[b1] ~ dnorm(mean.bp[b1], sd=sig.bp[b1,b1])   # all beta coefficients
     } # b1
      wptemp[7] <- 1 
-     mean.sigphi <- post.bp[7]*(1-wptemp[7])
+     mean.sigphi <- post.bp[7]*(1-wptemp[7]) 
      sd.sigphi <- sd.bp[7]*(1-wptemp[7]) + (wptemp[7]*bp.sigphi)
-     sig.phi.alpha ~ T(dnorm(mean.sigphi, sd=sd.sigphi), 0, )
+     sig.phi ~ T(dnorm(mean.sigphi, sd=sd.sigphi), 0, )
      bp.sigphi <- 10
     # set up the vectors/matrices for beta estimation, abundance
     for(b1 in 2:n.betasg){
@@ -87,10 +85,10 @@ code <- nimbleCode(
       } # b2
       gam.alpha[b1] ~ dnorm(mean.bg[b1], sd=sig.bg[b1,b1])   # all beta coefficients
     } # b1
-     wgtemp[7] <- 1 
-     mean.siggam <- post.bg[7]*(1-wgtemp[7])
-     sd.siggam <- sd.bg[7]*(1-wgtemp[7]) + (wgtemp[7]*bg.siggam)
-     sig.gam.alpha ~ T(dnorm(mean.siggam, sd=sd.siggam), 0, )
+     wgtemp[8] <- 1 
+     mean.siggam <- post.bg[8]*(1-wgtemp[8]) 
+     sd.siggam <- sd.bg[8]*(1-wgtemp[8]) + (wgtemp[8]*bg.siggam)
+     sig.gam ~ T(dnorm(mean.siggam, sd=sd.siggam), 0, )
      bg.siggam <- 10
     ## LIKELIHOOD
     ## first year
@@ -125,12 +123,12 @@ code <- nimbleCode(
           wptemp[7] * eps.phi[t-1]
         logit(gamma[i,t-1]) <- 
           wgtemp[1] * gam.alpha[1] + 
-          wgtemp[2] * gam.alpha[2] * YSF.std[i,t, 6 ] + 
-          wgtemp[3] * gam.alpha[3] * sin(SEAS[i,t, 1 ]*2*3.1416) + 
-          wgtemp[4] * gam.alpha[4] * cos(SEAS[i,t, 1 ]*2*3.1416) +
-          wgtemp[5] * gam.alpha[5] * sin(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 6 ] + 
-          wgtemp[6] * gam.alpha[6] * cos(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 6 ] + 
-          wgtemp[7] * eps.phi[t-1] 
+          wgtemp[2] * gam.alpha[2] * YSF.std[i,t, 4 ] + wgtemp[3] * gam.alpha[3] * YSF.std[i,t, 4 ]^2 +
+          wgtemp[4] * gam.alpha[4] * sin(SEAS[i,t, 1 ]*2*3.1416) + 
+          wgtemp[5] * gam.alpha[5] * cos(SEAS[i,t, 1 ]*2*3.1416) +
+          wgtemp[6] * gam.alpha[6] * sin(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 4 ] * YSF.std[i,t, 4 ]^2 +
+          wgtemp[7] * gam.alpha[7] * cos(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 4 ] * YSF.std[i,t, 4 ]^2 +
+          wgtemp[8] * eps.gam[t-1] 
         } # t nyear 
       
       for (t in 1:nyear){
@@ -146,22 +144,8 @@ code <- nimbleCode(
      n.occ[1] <- sum(z[1:nsite,1])
      for (t in 2:nyear){
        n.occ[t] <- sum(z[1:nsite,t])
-       logit(phi.est[t-1]) <- 
-         phi.alpha[1] + 
-         phi.alpha[2] * mean(YSF.std[,t, 6 ]) + 
-         phi.alpha[3] * mean(sin(SEAS[,t, 1 ]*2*3.1416)) + 
-         phi.alpha[4] * mean(cos(SEAS[,t, 1 ]*2*3.1416)) +
-         phi.alpha[5] * mean(sin(SEAS[,t, 1 ]*2*3.1416) * YSF.std[,t, 6 ]) + 
-         phi.alpha[6] * mean(cos(SEAS[,t, 1 ]*2*3.1416) * YSF.std[,t, 6 ]) +
-         eps.phi[t-1]
-       logit(gam.est[t-1]) <- 
-         gam.alpha[1] + 
-         gam.alpha[2] * mean(YSF.std[,t, 6 ]) + 
-         gam.alpha[3] * mean(sin(SEAS[,t, 1 ]*2*3.1416)) + 
-         gam.alpha[4] * mean(cos(SEAS[,t, 1 ]*2*3.1416)) +
-         gam.alpha[5] * mean(sin(SEAS[,t, 1 ]*2*3.1416) * YSF.std[,t, 6 ]) + 
-         gam.alpha[6] * mean(cos(SEAS[,t, 1 ]*2*3.1416) * YSF.std[,t, 6 ]) + 
-         eps.phi[t-1] 
+       phi.est[t-1] <- mean(phi[1:nsite,t-1])
+       gam.est[t-1] <- mean(gamma[1:nsite,t-1])
        psi[t] <- psi[t-1]*phi.est[t-1] + (1-psi[t-1])*gam.est[t-1]
        growthr[t-1] <- psi[t]/psi[t-1] 
        turnover[t-1] <- (1-psi[t-1]) * gam.est[t-1]/psi[t]
@@ -187,12 +171,12 @@ datl <- list(
     nYSF= dim(YSF)[[3]],
     nSEAS= dim(SEAS)[[3]], 
     n.betasp = 6,
-    n.betasg = 6,
+    n.betasg = 7,
     posp = c(1, 2, 3, 4, 5, 6), 
-    posg = c(1, 2, 3, 4, 5, 6),
-    post.bp = rep(0, 7),
-    sd.bp = c(rep(100, 6),10),
-    post.bg = rep(0, 7),
+    posg = c(1, 2, 2, 3, 4, 5, 6),
+    post.bp = c(rep(0, 6), 0),
+    sd.bp = c(rep(100, 6), 10),
+    post.bg = c(rep(0, 7), 0),
     sd.bg = c(rep(100, 7), 10)
   )
 
@@ -230,7 +214,7 @@ inits <- function()list (
   mean.gamma= runif(1),
   mean.phi=runif(1),
   phi.alpha= runif(6, -5, 5),
-  gam.alpha= runif(6, -5, 5),
+  gam.alpha= runif(7, -5, 5),
   sig.p10=runif(1),
   sig.p11=runif(1),
   sig.phi=runif(1),
