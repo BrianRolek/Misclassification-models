@@ -1,7 +1,7 @@
 m <- "06-misclass_GVS_step2"
 library (nimble)
 load("/scratch/brolek/fgsp_misclass/data/final-data.Rdata")
-load("/scratch/brolek/fgsp_misclass/outputs/misclass_global_AP_GVS_simple_step1_2020-04-16.Rdata")
+load("/scratch/brolek/fgsp_misclass/outputs/05-misclass_GVS_step1_2020-04-30.Rdata")
 outg <- out
 rm(list="out")
 
@@ -200,7 +200,7 @@ datl <- list(
   post.bp = c(apply(pa, 2, mean), mean(pa.sig)),
   sd.bp = c(apply(pa, 2, sd), sd(pa.sig)),
   post.bg = c(apply(pg, 2, mean), mean(pg.sig)),
-  sd.bg = c(apply(pg, 2, sd), sd(pg.sig))
+  sd.bg = c(apply(pg, 2, sd), sd(pg.sig)) 
 )
 
 params<-c("mean.p11", "p11.b", "sig.p11",
@@ -223,7 +223,7 @@ Y.inits[is.na(dat.conv$Y)] <- 1
 inits <- function()list ( 
   Y = Y.inits,
   z = z.inits,
-  muZ= ifelse(occ1>0, 0.1, 0.8), 
+  muZ= ifelse(z.inits>0, 0.1, 0.8), 
   p10 = array(runif(datl$nsite*datl$nvisit*datl$nyear, 0.001, 0.1), dim=c(datl$nsite,datl$nvisit,datl$nyear)),
   p11 = array(runif(datl$nsite*datl$nvisit*datl$nyear, 0.3, 0.7), dim=c(datl$nsite,datl$nvisit,datl$nyear)),
   b = array(runif(datl$nsite*datl$nvisit*datl$nyear, 0.5, 0.99), dim=c(datl$nsite,datl$nvisit,datl$nyear)),
@@ -249,10 +249,19 @@ inits <- function()list (
   wp= rbinom(n=7, size=1, prob=1),
   wg= rbinom(n=7, size=1, prob=1),
   bp.sig=100,
-  bg.sig=100
+  bg.sig=100,
+  gamma= array(runif(datl$nsite*(datl$nyear-1), 0, 1), dim=c(datl$nsite,datl$nyear-1)),
+  phi= array(runif(datl$nsite*(datl$nyear-1), 0, 1), dim=c(datl$nsite,datl$nyear-1)),
+  psi= runif(datl$nyear, 0, 1),
+  gam.est=runif(datl$nyear-1, 0, 1),
+  phi.est=runif(datl$nyear-1, 0, 1),
+  growthr=runif(datl$nyear-1, 0.95, 1.05),
+  turnover=runif(datl$nyear-1, 0, 1), 
+  wgtemp = rep(1, 8),
+  wptemp = rep(1, 7)
 ) 
 n.chains=6; n.thin=200; n.iter=600000; n.burnin=400000
-n.chains=3; n.thin=1; n.iter=200; n.burnin=100 # trial runs
+#n.chains=3; n.thin=1; n.iter=5000; n.burnin=100 # trial runs
 
 mod <- list()
 mod<- nimbleModel(code, calculate=T, constants = datl[-1], 
