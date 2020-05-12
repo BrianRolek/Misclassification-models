@@ -21,7 +21,7 @@ code <- nimbleCode(
     sig.p11 ~ T(dnorm(0,10),0, )
     bp.sig <- 100
     bg.sig <- 100
-    for (xx in 2:4) { b.b[xx] ~ dnorm(0, sd=100) }
+    for (xx in 2) { b.b[xx] ~ dnorm(0, sd=100) }
     for (xx in 2:3) { p10.b[xx] ~ dnorm(0, sd=100) }
     for (xx in 2) { p11.b[xx] ~ dnorm(0, sd=100) }
     for (t in 1:(nyear-1)){ 
@@ -70,11 +70,11 @@ code <- nimbleCode(
       } # b2
       phi.alpha[b1] ~ dnorm(mean.bp[b1], sd=sig.bp[b1,b1])   # all beta coefficients
     } # b1
-     wptemp[7] <- 1 
-     mean.sigphi <- post.bp[7]*(1-wptemp[7]) 
-     sd.sigphi <- sd.bp[7]*(1-wptemp[7]) + (wptemp[7]*bp.sigphi)
-     sig.phi ~ T(dnorm(mean.sigphi, sd=sd.sigphi), 0, )
-     bp.sigphi <- 10
+    wptemp[7] <- 1 
+    mean.sigphi <- post.bp[7]*(1-wptemp[7]) 
+    sd.sigphi <- sd.bp[7]*(1-wptemp[7]) + (wptemp[7]*bp.sigphi)
+    sig.phi ~ T(dnorm(mean.sigphi, sd=sd.sigphi), 0, )
+    bp.sigphi <- 10
     # set up the vectors/matrices for beta estimation, abundance
     for(b1 in 2:n.betasg){
       # wgtemp[b1] <- wg[posg[b1]]                # this uses GVS
@@ -85,11 +85,11 @@ code <- nimbleCode(
       } # b2
       gam.alpha[b1] ~ dnorm(mean.bg[b1], sd=sig.bg[b1,b1])   # all beta coefficients
     } # b1
-     wgtemp[8] <- 1 
-     mean.siggam <- post.bg[8]*(1-wgtemp[8]) 
-     sd.siggam <- sd.bg[8]*(1-wgtemp[8]) + (wgtemp[8]*bg.siggam)
-     sig.gam ~ T(dnorm(mean.siggam, sd=sd.siggam), 0, )
-     bg.siggam <- 10
+    wgtemp[8] <- 1 
+    mean.siggam <- post.bg[8]*(1-wgtemp[8]) 
+    sd.siggam <- sd.bg[8]*(1-wgtemp[8]) + (wgtemp[8]*bg.siggam)
+    sig.gam ~ T(dnorm(mean.siggam, sd=sd.siggam), 0, )
+    bg.siggam <- 10
     ## LIKELIHOOD
     ## first year
     for(i in 1:nsite){
@@ -129,56 +129,56 @@ code <- nimbleCode(
           wgtemp[6] * gam.alpha[6] * sin(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 4 ] * YSF.std[i,t, 4 ]^2 +
           wgtemp[7] * gam.alpha[7] * cos(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 4 ] * YSF.std[i,t, 4 ]^2 +
           wgtemp[8] * eps.gam[t-1] 
-        } # t nyear 
+      } # t nyear 
       
       for (t in 1:nyear){
         for (j in 1:nvisit){
           # detection models
-          logit(b[i,j,t]) <- b.b[1] + b.b[2]*date[i,j,t] + b.b[3]*date[i,j,t]*2+ b.b[4]*date[i,j,t]^3 
+          logit(b[i,j,t]) <- b.b[1] + b.b[2]*date[i,j,t] #+ b.b[3]*date[i,j,t]*2 #+ b.b[4]*date[i,j,t]^3 
           logit(p11[i,j,t]) <- p11.b[1] + p11.b[2]*hr[i,j,t] + eps.p11[t]
           logit(p10[i,j,t]) <- p10.b[1]  + p10.b[2]*date[i,j,t] + p10.b[3]*date[i,j,t]^2 + eps.p10[t]
         } } }# t j i
     
     # Predicted values for certainty, detection, and misclassification
-     psi[1] <- mean.psi
-     n.occ[1] <- sum(z[1:nsite,1])
-     for (t in 2:nyear){
-       n.occ[t] <- sum(z[1:nsite,t])
-       phi.est[t-1] <- mean(phi[1:nsite,t-1])
-       gam.est[t-1] <- mean(gamma[1:nsite,t-1])
-       psi[t] <- psi[t-1]*phi.est[t-1] + (1-psi[t-1])*gam.est[t-1]
-       growthr[t-1] <- psi[t]/psi[t-1] 
-       turnover[t-1] <- (1-psi[t-1]) * gam.est[t-1]/psi[t]
+    psi[1] <- mean.psi
+    n.occ[1] <- sum(z[1:nsite,1])
+    for (t in 2:nyear){
+      n.occ[t] <- sum(z[1:nsite,t])
+      phi.est[t-1] <- mean(phi[1:nsite,t-1])
+      gam.est[t-1] <- mean(gamma[1:nsite,t-1])
+      psi[t] <- psi[t-1]*phi.est[t-1] + (1-psi[t-1])*gam.est[t-1]
+      growthr[t-1] <- psi[t]/psi[t-1] 
+      turnover[t-1] <- (1-psi[t-1]) * gam.est[t-1]/psi[t]
     } # t
   }
 )
 
 #  scale and center fire data
 YSF.std <- array(NA, dim=dim(YSF))
-  for (j in 1:6){
-    YSF.std[,,j] <- (YSF[,,j]-mean(YSF[,,j], na.rm=T)) / sd(YSF[,,j])
-  }
+for (j in 1:6){
+  YSF.std[,,j] <- (YSF[,,j]-mean(YSF[,,j], na.rm=T)) / sd(YSF[,,j])
+}
 
 datl <- list(
-    Y=dat.conv$Y,
-    date= dat.conv$date,
-    hr= dat.conv$hr,
-    nsite=dim(dat.conv$Y)[[1]],
-    nvisit=dim(dat.conv$Y)[[2]],
-    nyear=dim(dat.conv$Y)[[3]],
-    YSF.std=YSF.std,
-    SEAS=SEAS,
-    nYSF= dim(YSF)[[3]],
-    nSEAS= dim(SEAS)[[3]], 
-    n.betasp = 6,
-    n.betasg = 7,
-    posp = c(1, 2, 3, 4, 5, 6), 
-    posg = c(1, 2, 2, 3, 4, 5, 6),
-    post.bp = c(rep(0, 6), 0),
-    sd.bp = c(rep(100, 6), 10),
-    post.bg = c(rep(0, 7), 0),
-    sd.bg = c(rep(100, 7), 10)
-  )
+  Y=dat.conv$Y,
+  date= dat.conv$date,
+  hr= dat.conv$hr,
+  nsite=dim(dat.conv$Y)[[1]],
+  nvisit=dim(dat.conv$Y)[[2]],
+  nyear=dim(dat.conv$Y)[[3]],
+  YSF.std=YSF.std,
+  SEAS=SEAS,
+  nYSF= dim(YSF)[[3]],
+  nSEAS= dim(SEAS)[[3]], 
+  n.betasp = 6,
+  n.betasg = 7,
+  posp = c(1, 2, 3, 4, 5, 6), 
+  posg = c(1, 2, 2, 3, 4, 5, 6),
+  post.bp = c(rep(0, 6), 0),
+  sd.bp = c(rep(100, 6), 10),
+  post.bg = c(rep(0, 7), 0),
+  sd.bg = c(rep(100, 7), 10)
+)
 
 params<-c("mean.p11", "p11.b", "sig.p11",
           "mean.b", "b.b",
@@ -208,7 +208,7 @@ inits <- function()list (
   mean.p11=runif(1),
   mean.p10=runif(1, 0.01, 0.1),
   mean.b=runif(1),
-  b.b=c(runif(4, -5, 5)),
+  b.b=c(runif(2, -5, 5)),
   p10.b=c(runif(3, -5, 5)),
   p11.b=runif(2, -5, 5),
   mean.gamma= runif(1),
@@ -234,23 +234,23 @@ n.chains=3; n.thin=200; n.iter=600000; n.burnin=400000
 
 mod<- nimbleModel(code, calculate=T, constants = datl[-1], 
                   data = list(Y=datl$Y), inits = inits())
-  
+
 out <- nimbleMCMC(
-    model = mod,
-    code = code,
-    monitors = params,
-    nchains = n.chains,
-    thin = n.thin,
-    niter = n.iter,
-    nburnin = n.burnin,
-    progressBar = T,
-    summary = T,
-    WAIC = F,
-    samplesAsCodaMCMC = T,
-    samples=T
-  )
-  
-  flnm <- paste("/scratch/brolek/fgsp_misclass/outputs/",m, "_", Sys.Date(), ".Rdata", sep="")
+  model = mod,
+  code = code,
+  monitors = params,
+  nchains = n.chains,
+  thin = n.thin,
+  niter = n.iter,
+  nburnin = n.burnin,
+  progressBar = T,
+  summary = T,
+  WAIC = F,
+  samplesAsCodaMCMC = T,
+  samples=T
+)
+
+flnm <- paste("/scratch/brolek/fgsp_misclass/outputs/",m, "_", Sys.Date(), ".Rdata", sep="")
 #  flnm <- paste("C:\\Users\\rolek.brian\\Documents\\Projects\\FGSP Misclassification\\FINAL\\", m, "_", Sys.Date(), ".Rdata", sep="")
-  save(out, mod, file=flnm)
+save(out, mod, file=flnm)
 

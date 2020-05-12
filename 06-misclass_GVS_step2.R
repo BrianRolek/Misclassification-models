@@ -1,7 +1,7 @@
 m <- "06-misclass_GVS_step2"
 library (nimble)
 load("/scratch/brolek/fgsp_misclass/data/final-data.Rdata")
-load("/scratch/brolek/fgsp_misclass/outputs/05-misclass_GVS_step1_2020-04-30.Rdata")
+load("/scratch/brolek/fgsp_misclass/outputs/05-misclass_GVS_step1_date_2020-05-08.Rdata")
 outg <- out
 rm(list="out")
 
@@ -24,7 +24,7 @@ code <- nimbleCode(
     sig.p11 ~ T(dnorm(0,10),0, )
     bp.sig <- 100
     bg.sig <- 100
-    for (xx in 2:4) { b.b[xx] ~ dnorm(0, sd=100) }
+    for (xx in 2) { b.b[xx] ~ dnorm(0, sd=100) }
     for (xx in 2:3) { p10.b[xx] ~ dnorm(0, sd=100) }
     for (xx in 2) { p11.b[xx] ~ dnorm(0, sd=100) }
     for (t in 1:(nyear-1)){ 
@@ -139,7 +139,7 @@ code <- nimbleCode(
       for (t in 1:nyear){
         for (j in 1:nvisit){
           # detection models
-          logit(b[i,j,t]) <- b.b[1] + b.b[2]*date[i,j,t] + b.b[3]*date[i,j,t]*2+ b.b[4]*date[i,j,t]^3 
+          logit(b[i,j,t]) <- b.b[1] + b.b[2]*date[i,j,t] #+ b.b[3]*date[i,j,t]*2+ b.b[4]*date[i,j,t]^3 
           logit(p11[i,j,t]) <- p11.b[1] + p11.b[2]*hr[i,j,t] + eps.p11[t]
           logit(p10[i,j,t]) <- p10.b[1]  + p10.b[2]*date[i,j,t] + p10.b[3]*date[i,j,t]^2 + eps.p10[t]
         } } }# t j i
@@ -231,7 +231,7 @@ inits <- function()list (
   mean.p11=runif(1),
   mean.p10=runif(1, 0.01, 0.1),
   mean.b=runif(1),
-  b.b=c(runif(4, -5, 5)),
+  b.b=c(runif(2, -5, 5)),
   p10.b=c(runif(3, -5, 5)),
   p11.b=runif(2, -5, 5),
   mean.gamma= runif(1),
