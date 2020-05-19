@@ -20,8 +20,8 @@ code <- nimbleCode(
     gam.alpha[1] <- logit(mean.gamma)
     mean.psi ~ dunif(0, 1)
     psi.b <- logit(mean.psi)
-    sig.p10 ~ T(dnorm(0,10),0, )
-    sig.p11 ~ T(dnorm(0,10),0, )
+    sig.p10 ~ T(dnorm(0,sd=10),0, )
+    sig.p11 ~ T(dnorm(0,sd=10),0, )
     bp.sig <- 100
     bg.sig <- 100
     for (xx in 2:4) { b.b[xx] ~ dnorm(0, sd=100) }
@@ -121,10 +121,10 @@ code <- nimbleCode(
         logit(phi[i,t-1]) <- 
           wptemp[1] * phi.alpha[1] + 
           wptemp[2] * phi.alpha[2] * YSF.std[i,t, 6 ] + 
-          wptemp[3] * phi.alpha[3] * sin(SEAS[i,t, 1 ]*2*3.1416) + 
-          wptemp[4] * phi.alpha[4] * cos(SEAS[i,t, 1 ]*2*3.1416) +
-          wptemp[5] * phi.alpha[5] * sin(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 6 ] + 
-          wptemp[6] * phi.alpha[6] * cos(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 6 ] +
+          wptemp[3] * phi.alpha[3] * sin(SEAS[i,t, 2 ]*2*3.1416) + 
+          wptemp[4] * phi.alpha[4] * cos(SEAS[i,t, 2 ]*2*3.1416) +
+          wptemp[5] * phi.alpha[5] * sin(SEAS[i,t, 2 ]*2*3.1416) * YSF.std[i,t, 6 ] + 
+          wptemp[6] * phi.alpha[6] * cos(SEAS[i,t, 2 ]*2*3.1416) * YSF.std[i,t, 6 ] +
           wptemp[7] * eps.phi[t-1]
         logit(gamma[i,t-1]) <- 
           wgtemp[1] * gam.alpha[1] + 
@@ -203,7 +203,7 @@ datl <- list(
   sd.bg = c(apply(pg, 2, sd), sd(pg.sig)) 
 )
 
-params<-c("mean.p11", "p11.b", "sig.p11",
+params<-c("mean.p11", "p11.b", "eps.p11", "sig.p11",
           "mean.b", "b.b",
           "mean.p10", "p10.b", "eps.p10", "sig.p10",
           "psi.b", 
