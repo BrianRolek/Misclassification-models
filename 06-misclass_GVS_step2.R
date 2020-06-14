@@ -33,7 +33,8 @@ code <- nimbleCode(
     } # t
     for (t in 1:nyear){ 
       eps.p10[t] ~ dnorm(0, sd=sig.p10) 
-      eps.p11[t] ~ dnorm(0, sd=sig.p11)} # t 
+      eps.p11[t] ~ dnorm(0, sd=sig.p11)
+      eps.b[t] ~ dnorm(0, sd=sig.b)} # t 
     
     # priors for the w model inclusion terms, phi.alpha
     # this ensures that each of the 8 model combos has equal probability: Pr(m)= 1/8
@@ -128,18 +129,18 @@ code <- nimbleCode(
           wptemp[7] * eps.phi[t-1]
         logit(gamma[i,t-1]) <- 
           wgtemp[1] * gam.alpha[1] + 
-          wgtemp[2] * gam.alpha[2] * YSF.std[i,t, 4 ] + wgtemp[3] * gam.alpha[3] * YSF.std[i,t, 4 ]^2 +
+          wgtemp[2] * gam.alpha[2] * YSF.std[i,t, 6 ] + wgtemp[3] * gam.alpha[3] * YSF.std[i,t, 6 ]^2 +
           wgtemp[4] * gam.alpha[4] * sin(SEAS[i,t, 1 ]*2*3.1416) + 
           wgtemp[5] * gam.alpha[5] * cos(SEAS[i,t, 1 ]*2*3.1416) +
-          wgtemp[6] * gam.alpha[6] * sin(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 4 ] * YSF.std[i,t, 4 ]^2 +
-          wgtemp[7] * gam.alpha[7] * cos(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 4 ] * YSF.std[i,t, 4 ]^2 +
+          wgtemp[6] * gam.alpha[6] * sin(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 6 ] * YSF.std[i,t, 6 ]^2 +
+          wgtemp[7] * gam.alpha[7] * cos(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 6 ] * YSF.std[i,t, 6 ]^2 +
           wgtemp[8] * eps.gam[t-1]
         } # t nyear 
       
       for (t in 1:nyear){
         for (j in 1:nvisit){
           # detection models
-          logit(b[i,j,t]) <- b.b[1] + b.b[2]*date[i,j,t] + b.b[3]*date[i,j,t]^2+ b.b[4]*date[i,j,t]^3 
+          logit(b[i,j,t]) <-  b.b[1] + b.b[2]*date[i,j,t] + b.b[3]*date[i,j,t]^2+ b.b[4]*date[i,j,t]^3 + eps.b[t]
           logit(p11[i,j,t]) <- p11.b[1] + p11.b[2]*hr[i,j,t] + eps.p11[t]
           logit(p10[i,j,t]) <- p10.b[1]  + p10.b[2]*date[i,j,t] + p10.b[3]*date[i,j,t]^2 + eps.p10[t]
         } } }# t j i
@@ -204,7 +205,7 @@ datl <- list(
 )
 
 params<-c("mean.p11", "p11.b", "eps.p11", "sig.p11",
-          "mean.b", "b.b",
+          "mean.b", "b.b", "eps.b", "sig.b",
           "mean.p10", "p10.b", "eps.p10", "sig.p10",
           "psi.b", 
           "mean.phi", "phi.alpha", "eps.phi", "sig.phi", "phi.est",
@@ -240,12 +241,14 @@ inits <- function()list (
   gam.alpha= runif(7, -5, 5),
   sig.p10=runif(1),
   sig.p11=runif(1),
+  sig.b=runif(1),
   sig.phi=runif(1),
   sig.gam=runif(1),
   eps.phi = runif((datl$nyear-1), -0.1, 0.1),
   eps.gam = runif((datl$nyear-1), -0.1, 0.1),
   eps.p10 = runif((datl$nyear), -0.1, 0.1),
   eps.p11 = runif((datl$nyear), -0.1, 0.1),
+  eps.b = runif((datl$nyear), -0.1, 0.1),
   wp= rbinom(n=7, size=1, prob=1),
   wg= rbinom(n=7, size=1, prob=1),
   bp.sig=100,

@@ -19,9 +19,10 @@ code <- nimbleCode(
     psi.b <- logit(mean.psi)
     sig.p10 ~ T(dnorm(0,10),0, )
     sig.p11 ~ T(dnorm(0,10),0, )
+    sig.b ~ T(dnorm(0,10),0, )
     bp.sig <- 100
     bg.sig <- 100
-    for (xx in 2) { b.b[xx] ~ dnorm(0, sd=100) }
+    for (xx in 2:4) { b.b[xx] ~ dnorm(0, sd=100) }
     for (xx in 2:3) { p10.b[xx] ~ dnorm(0, sd=100) }
     for (xx in 2) { p11.b[xx] ~ dnorm(0, sd=100) }
     for (t in 1:(nyear-1)){ 
@@ -30,7 +31,8 @@ code <- nimbleCode(
     } # t
     for (t in 1:nyear){ 
       eps.p10[t] ~ dnorm(0, sd=sig.p10) 
-      eps.p11[t] ~ dnorm(0, sd=sig.p11)} # t 
+      eps.p11[t] ~ dnorm(0, sd=sig.p11)
+      eps.b[t] ~ dnorm(0, sd=sig.b)} # t 
     
     # priors for the w model inclusion terms, phi.alpha
     # this ensures that each of the 8 model combos has equal probability: Pr(m)= 1/8
@@ -116,25 +118,25 @@ code <- nimbleCode(
         logit(phi[i,t-1]) <- 
           wptemp[1] * phi.alpha[1] + 
           wptemp[2] * phi.alpha[2] * YSF.std[i,t, 6 ] + 
-          wptemp[3] * phi.alpha[3] * sin(SEAS[i,t, 1 ]*2*3.1416) + 
-          wptemp[4] * phi.alpha[4] * cos(SEAS[i,t, 1 ]*2*3.1416) +
-          wptemp[5] * phi.alpha[5] * sin(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 6 ] + 
-          wptemp[6] * phi.alpha[6] * cos(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 6 ] +
+          wptemp[3] * phi.alpha[3] * sin(SEAS[i,t, 2 ]*2*3.1416) + 
+          wptemp[4] * phi.alpha[4] * cos(SEAS[i,t, 2 ]*2*3.1416) +
+          wptemp[5] * phi.alpha[5] * sin(SEAS[i,t, 2 ]*2*3.1416) * YSF.std[i,t, 6 ] + 
+          wptemp[6] * phi.alpha[6] * cos(SEAS[i,t, 2 ]*2*3.1416) * YSF.std[i,t, 6 ] +
           wptemp[7] * eps.phi[t-1]
         logit(gamma[i,t-1]) <- 
           wgtemp[1] * gam.alpha[1] + 
-          wgtemp[2] * gam.alpha[2] * YSF.std[i,t, 4 ] + wgtemp[3] * gam.alpha[3] * YSF.std[i,t, 4 ]^2 +
+          wgtemp[2] * gam.alpha[2] * YSF.std[i,t, 6 ] + wgtemp[3] * gam.alpha[3] * YSF.std[i,t, 6 ]^2 +
           wgtemp[4] * gam.alpha[4] * sin(SEAS[i,t, 1 ]*2*3.1416) + 
           wgtemp[5] * gam.alpha[5] * cos(SEAS[i,t, 1 ]*2*3.1416) +
-          wgtemp[6] * gam.alpha[6] * sin(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 4 ] * YSF.std[i,t, 4 ]^2 +
-          wgtemp[7] * gam.alpha[7] * cos(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 4 ] * YSF.std[i,t, 4 ]^2 +
+          wgtemp[6] * gam.alpha[6] * sin(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 6 ] * YSF.std[i,t, 6 ]^2 +
+          wgtemp[7] * gam.alpha[7] * cos(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 6 ] * YSF.std[i,t, 6 ]^2 +
           wgtemp[8] * eps.gam[t-1] 
       } # t nyear 
       
       for (t in 1:nyear){
         for (j in 1:nvisit){
           # detection models
-          logit(b[i,j,t]) <- b.b[1] + b.b[2]*date[i,j,t] #+ b.b[3]*date[i,j,t]*2 #+ b.b[4]*date[i,j,t]^3 
+          logit(b[i,j,t]) <- b.b[1] + b.b[2]*date[i,j,t] + b.b[3]*date[i,j,t]^2+ b.b[4]*date[i,j,t]^3 + eps.b[t]
           logit(p11[i,j,t]) <- p11.b[1] + p11.b[2]*hr[i,j,t] + eps.p11[t]
           logit(p10[i,j,t]) <- p10.b[1]  + p10.b[2]*date[i,j,t] + p10.b[3]*date[i,j,t]^2 + eps.p10[t]
         } } }# t j i
@@ -180,8 +182,8 @@ datl <- list(
   sd.bg = c(rep(100, 7), 10)
 )
 
-params<-c("mean.p11", "p11.b", "sig.p11",
-          "mean.b", "b.b",
+params<-c("mean.p11", "p11.b", "eps.p11", "sig.p11",
+          "mean.b", "b.b", "eps.b", "sig.b",
           "mean.p10", "p10.b", "eps.p10", "sig.p10",
           "psi.b", 
           "mean.phi", "phi.alpha", "eps.phi", "sig.phi", "phi.est",
@@ -208,7 +210,7 @@ inits <- function()list (
   mean.p11=runif(1),
   mean.p10=runif(1, 0.01, 0.1),
   mean.b=runif(1),
-  b.b=c(runif(2, -5, 5)),
+  b.b=c(runif(4, -5, 5)),
   p10.b=c(runif(3, -5, 5)),
   p11.b=runif(2, -5, 5),
   mean.gamma= runif(1),
@@ -217,12 +219,14 @@ inits <- function()list (
   gam.alpha= runif(7, -5, 5),
   sig.p10=runif(1),
   sig.p11=runif(1),
+  sig.b=runif(1),
   sig.phi=runif(1),
   sig.gam=runif(1),
   eps.phi = runif((datl$nyear-1), -0.1, 0.1),
   eps.gam = runif((datl$nyear-1), -0.1, 0.1),
   eps.p10 = runif((datl$nyear), -0.1, 0.1),
   eps.p11 = runif((datl$nyear), -0.1, 0.1),
+  eps.b = runif((datl$nyear), -0.1, 0.1),
   wp= rbinom(n=7, size=1, prob=1),
   wg= rbinom(n=7, size=1, prob=1),
   bp.sig=100,
