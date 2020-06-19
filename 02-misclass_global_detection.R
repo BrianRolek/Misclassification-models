@@ -23,9 +23,11 @@ code <- nimbleCode(
     for (xx in 2:5) { p11.b[xx] ~ dnorm(0, sd=100) }
     for (t in 1:nyear){ 
       eps.p10[t] ~ dnorm(0, sd=sig.p10) 
-      eps.p11[t] ~ dnorm(0, sd=sig.p11)}# t 
+      eps.p11[t] ~ dnorm(0, sd=sig.p11)
+      eps.b[t] ~ dnorm(0, sd=sig.b)} # t 
     sig.p10 ~ T(dnorm(0,10),0, )
     sig.p11 ~ T(dnorm(0,10),0, )
+    sig.b ~ T(dnorm(0,10),0, )
     
     ## LIKELIHOOD
     ## first year
@@ -57,7 +59,7 @@ code <- nimbleCode(
       for (t in 1:nyear){
         for (j in 1:nvisit){
           # detection models
-          logit(b[i,j,t]) <- b.b[1] + b.b[2]*date[i,j,t] + b.b[3]*date[i,j,t]^2+ b.b[4]*date[i,j,t]^3 
+          logit(b[i,j,t]) <- b.b[1] + b.b[2]*date[i,j,t] + b.b[3]*date[i,j,t]^2+ b.b[4]*date[i,j,t]^3 + eps.b[t]
           logit(p11[i,j,t]) <- p11.b[1] + p11.b[2]*date[i,j,t] + p11.b[3]*date[i,j,t]^2 + p11.b[4]*hr[i,j,t] + p11.b[5]*hr[i,j,t]^2 + eps.p11[t]
           logit(p10[i,j,t]) <- p10.b[1]  + p10.b[2]*date[i,j,t] + p10.b[3]*date[i,j,t]^2 + eps.p10[t]
         } } }# t j i
@@ -86,7 +88,7 @@ datl <- list(
 )
 
 params<-c("mean.p11", "p11.b", "sig.p11",
-          "mean.b", "b.b",  
+          "mean.b", "b.b", "eps.b", "sig.b", 
           "mean.p10", "p10.b", "sig.p10",
           "psi.b", 
           "mean.phi", "phi.alpha", "phi.est",
@@ -122,8 +124,10 @@ inits <- function()list (
   gam.alpha= runif(1, -5, 5),
   sig.p10=runif(1),
   sig.p11=runif(1),
+  sig.b=runif(1),
   eps.p10 = runif((datl$nyear), -0.1, 0.1),
-  eps.p11 = runif((datl$nyear), -0.1, 0.1)
+  eps.p11 = runif((datl$nyear), -0.1, 0.1),
+  eps.b = runif((datl$nyear), -0.1, 0.1)
 ) 
 n.chains=3; n.thin=200; n.iter=600000; n.burnin=400000
 #n.chains=3; n.thin=1; n.iter=1000; n.burnin=100 # trial runs

@@ -1,7 +1,7 @@
 m <- "06-misclass_GVS_step2"
 library (nimble)
 load("/scratch/brolek/fgsp_misclass/data/final-data.Rdata")
-load("/scratch/brolek/fgsp_misclass/outputs/05-misclass_GVS_step1_date_2020-05-08.Rdata")
+load("/scratch/brolek/fgsp_misclass/outputs/05-misclass_GVS_step1_2020-06-15.Rdata")
 outg <- out
 rm(list="out")
 
