@@ -122,18 +122,18 @@ code <- nimbleCode(
         logit(phi[i,t-1]) <- 
           wptemp[1] * phi.alpha[1] + 
           wptemp[2] * phi.alpha[2] * YSF.std[i,t, 6 ] + 
-          wptemp[3] * phi.alpha[3] * sin(SEAS[i,t, 2 ]*2*3.1416) + 
-          wptemp[4] * phi.alpha[4] * cos(SEAS[i,t, 2 ]*2*3.1416) +
-          wptemp[5] * phi.alpha[5] * sin(SEAS[i,t, 2 ]*2*3.1416) * YSF.std[i,t, 6 ] + 
-          wptemp[6] * phi.alpha[6] * cos(SEAS[i,t, 2 ]*2*3.1416) * YSF.std[i,t, 6 ] +
+          wptemp[3] * phi.alpha[3] * sin(SEAS[i,t, 1 ]*2*3.1416) + 
+          wptemp[4] * phi.alpha[4] * cos(SEAS[i,t, 1 ]*2*3.1416) +
+          wptemp[5] * phi.alpha[5] * sin(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 6 ] + 
+          wptemp[6] * phi.alpha[6] * cos(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 6 ] +
           wptemp[7] * eps.phi[t-1]
         logit(gamma[i,t-1]) <- 
           wgtemp[1] * gam.alpha[1] + 
-          wgtemp[2] * gam.alpha[2] * YSF.std[i,t, 6 ] + wgtemp[3] * gam.alpha[3] * YSF.std[i,t, 6 ]^2 +
+          wgtemp[2] * gam.alpha[2] * YSF.std[i,t, 5 ] + wgtemp[3] * gam.alpha[3] * YSF.std[i,t, 5 ]^2 +
           wgtemp[4] * gam.alpha[4] * sin(SEAS[i,t, 1 ]*2*3.1416) + 
           wgtemp[5] * gam.alpha[5] * cos(SEAS[i,t, 1 ]*2*3.1416) +
-          wgtemp[6] * gam.alpha[6] * sin(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 6 ] * YSF.std[i,t, 6 ]^2 +
-          wgtemp[7] * gam.alpha[7] * cos(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 6 ] * YSF.std[i,t, 6 ]^2 +
+          wgtemp[6] * gam.alpha[6] * sin(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 5 ] * YSF.std[i,t, 5 ]^2 +
+          wgtemp[7] * gam.alpha[7] * cos(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 5 ] * YSF.std[i,t, 5 ]^2 +
           wgtemp[8] * eps.gam[t-1]
         } # t nyear 
       
