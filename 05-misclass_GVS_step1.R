@@ -1,6 +1,9 @@
 m <- "05-misclass_GVS_step1"
 library (nimble)
 load("/scratch/brolek/fgsp_misclass/data/final-data.Rdata")
+#load("/scratch/brolek/fgsp_misclass/outputs/05-misclass_GVS_step1_2020-06-21.Rdata")
+#outg <- out
+rm(list="out")
 
 code <- nimbleCode(
   {
@@ -17,9 +20,8 @@ code <- nimbleCode(
     gam.alpha[1] <- logit(mean.gamma)
     mean.psi ~ dunif(0, 1)
     psi.b <- logit(mean.psi)
-    sig.p10 ~ T(dnorm(0,10),0, )
-    sig.p11 ~ T(dnorm(0,10),0, )
-    sig.b ~ T(dnorm(0,10),0, )
+    sig.p10 ~ T(dnorm(0,sd=10),0, )
+    sig.p11 ~ T(dnorm(0,sd=10),0, )
     bp.sig <- 100
     bg.sig <- 100
     for (xx in 2:4) { b.b[xx] ~ dnorm(0, sd=100) }
@@ -61,35 +63,38 @@ code <- nimbleCode(
     wg[2] ~ dbern(p.wg2)
     wg[1] ~ dbern(1)
     wgtemp[1] <- wg[1]
+    #   posg = c(1, 2, 2, 3, 4, 5, 6, 5, 6, 7), for reference
     
     # set up the vectors/matrices for beta estimation, abundance
     for(b1 in 2:n.betasp){
-      # wptemp[b1] <- wp[posp[b1]]                # this uses GVS
+      #wptemp[b1] <- wp[posp[b1]]                # this uses GVS
       wptemp[b1] <- 1                          # this forces you to fit the full model (all terms included)
       mean.bp[b1] <- post.bp[b1]*(1-wptemp[b1])  # prior is either 0 or full-model posterior mean
       for(b2 in 2:n.betasp){                   # set up the precision matrix (inverse variance) # allows for betas to be multivariate, if desired
-        sig.bp[b1,b2] <- equals(b1,b2)*(sd.bp[b1]*(1-wptemp[b1])) + (wptemp[b1]*bp.sig)
+        sig.bp[b1,b2] <- equals(b1,b2)*sd.bp[b1]*(1-wptemp[b1]) + (wptemp[b1]*bp.sig)
       } # b2
-      phi.alpha[b1] ~ dnorm(mean.bp[b1], sd=sig.bp[b1,b1])   # all beta coefficients
+      phi.alpha[b1] ~ T(dnorm(mean.bp[b1], sd=sig.bp[b1,b1]), -30, 30)   # all beta coefficients
     } # b1
     wptemp[7] <- 1 
+    #wptemp[7] <- wp[7]
     mean.sigphi <- post.bp[7]*(1-wptemp[7]) 
     sd.sigphi <- sd.bp[7]*(1-wptemp[7]) + (wptemp[7]*bp.sigphi)
     sig.phi ~ T(dnorm(mean.sigphi, sd=sd.sigphi), 0, )
     bp.sigphi <- 10
     # set up the vectors/matrices for beta estimation, abundance
     for(b1 in 2:n.betasg){
-      # wgtemp[b1] <- wg[posg[b1]]                # this uses GVS
+      #wgtemp[b1] <- wg[posg[b1]]                # this uses GVS
       wgtemp[b1] <- 1                          # this forces you to fit the full model (all terms included)
       mean.bg[b1] <- post.bg[b1]*(1-wgtemp[b1])  # prior is either 0 or full-model posterior mean
       for(b2 in 2:n.betasg){                   # set up the precision matrix (inverse variance) # allows for betas to be multivariate, if desired
-        sig.bg[b1,b2] <- equals(b1,b2)*(sd.bg[b1]*(1-wgtemp[b1])) + (wgtemp[b1]*bg.sig)
+        sig.bg[b1,b2] <- equals(b1,b2)*sd.bg[b1]*(1-wgtemp[b1]) + (wgtemp[b1]*bg.sig)
       } # b2
-      gam.alpha[b1] ~ dnorm(mean.bg[b1], sd=sig.bg[b1,b1])   # all beta coefficients
+      gam.alpha[b1] ~ T(dnorm(mean.bg[b1], sd=sig.bg[b1,b1]), -30, 30)   # all beta coefficients
     } # b1
-    wgtemp[8] <- 1 
-    mean.siggam <- post.bg[8]*(1-wgtemp[8]) 
-    sd.siggam <- sd.bg[8]*(1-wgtemp[8]) + (wgtemp[8]*bg.siggam)
+    wgtemp[10] <- 1 
+    #wgtemp[10] <- wg[7]
+    mean.siggam <- post.bg[10]*(1-wgtemp[10]) 
+    sd.siggam <- sd.bg[10]*(1-wgtemp[10]) + (wgtemp[10]*bg.siggam)
     sig.gam ~ T(dnorm(mean.siggam, sd=sd.siggam), 0, )
     bg.siggam <- 10
     ## LIKELIHOOD
@@ -128,20 +133,22 @@ code <- nimbleCode(
           wgtemp[2] * gam.alpha[2] * YSF.std[i,t, 5 ] + wgtemp[3] * gam.alpha[3] * YSF.std[i,t, 5 ]^2 +
           wgtemp[4] * gam.alpha[4] * sin(SEAS[i,t, 1 ]*2*3.1416) + 
           wgtemp[5] * gam.alpha[5] * cos(SEAS[i,t, 1 ]*2*3.1416) +
-          wgtemp[6] * gam.alpha[6] * sin(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 5 ] * YSF.std[i,t, 5 ]^2 +
-          wgtemp[7] * gam.alpha[7] * cos(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 5 ] * YSF.std[i,t, 5 ]^2 +
-          wgtemp[8] * eps.gam[t-1] 
+          wgtemp[6] * gam.alpha[6] * sin(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 5 ] +
+          wgtemp[7] * gam.alpha[7] * cos(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 5 ] +
+          wgtemp[8] * gam.alpha[8] * sin(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 5 ] * YSF.std[i,t, 5 ]^2 +
+          wgtemp[9] * gam.alpha[9] * cos(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 5 ] * YSF.std[i,t, 5 ]^2 +
+          wgtemp[10] * eps.gam[t-1]
       } # t nyear 
       
       for (t in 1:nyear){
         for (j in 1:nvisit){
           # detection models
-          logit(b[i,j,t]) <- b.b[1] + b.b[2]*date[i,j,t] + b.b[3]*date[i,j,t]^2+ b.b[4]*date[i,j,t]^3 + eps.b[t]
+          logit(b[i,j,t]) <-  b.b[1] + b.b[2]*date[i,j,t] + b.b[3]*date[i,j,t]^2+ b.b[4]*date[i,j,t]^3 + eps.b[t]
           logit(p11[i,j,t]) <- p11.b[1] + p11.b[2]*hr[i,j,t] + eps.p11[t]
           logit(p10[i,j,t]) <- p10.b[1]  + p10.b[2]*date[i,j,t] + p10.b[3]*date[i,j,t]^2 + eps.p10[t]
         } } }# t j i
     
-    # Predicted values for certainty, detection, and misclassification
+    # Predicted occupancy values 
     psi[1] <- mean.psi
     n.occ[1] <- sum(z[1:nsite,1])
     for (t in 2:nyear){
@@ -161,6 +168,33 @@ for (j in 1:6){
   YSF.std[,,j] <- (YSF[,,j]-mean(YSF[,,j], na.rm=T)) / sd(YSF[,,j])
 }
 
+# function to extract samples from nimble output  
+extr <- function (mod, var){
+  var2 <- paste("^", var, sep="")
+  col.ind <- grep(var2, colnames(outg$samples$chain1))
+  mat1 <- as.matrix(outg$samples$chain1[,col.ind])
+  mat2 <- as.matrix(outg$samples$chain2[,col.ind])
+  mat3 <- as.matrix(outg$samples$chain3[,col.ind])
+  all <- rbind(mat1, mat2, mat3) 
+  print(colnames(all))
+  return(all)
+}
+
+# extract samples
+# pa <- extr(outg, "phi.alpha")
+# pa.sig <- extr(outg, "sig.phi")
+# pg <- extr(outg, "gam.alpha")
+# pg.sig <- extr(outg, "sig.gam")
+# post.bp <-  c(apply(pa, 2, mean), mean(pa.sig))
+# sd.bp <-  c(apply(pa, 2, sd), sd(pa.sig))
+# post.bg <-  c(apply(pg, 2, mean), mean(pg.sig))
+# sd.bg <- c(apply(pg, 2, sd), sd(pg.sig))
+
+post.bp <-  c(rep(0, 6), 0)
+sd.bp <-  c(rep(100, 6), 10)
+post.bg <-  c(rep(0, 10), 0)
+sd.bg <-  c(rep(100, 10), 10)
+
 datl <- list(
   Y=dat.conv$Y,
   date= dat.conv$date,
@@ -173,13 +207,13 @@ datl <- list(
   nYSF= dim(YSF)[[3]],
   nSEAS= dim(SEAS)[[3]], 
   n.betasp = 6,
-  n.betasg = 7,
+  n.betasg = 9,
   posp = c(1, 2, 3, 4, 5, 6), 
-  posg = c(1, 2, 2, 3, 4, 5, 6),
-  post.bp = c(rep(0, 6), 0),
-  sd.bp = c(rep(100, 6), 10),
-  post.bg = c(rep(0, 7), 0),
-  sd.bg = c(rep(100, 7), 10)
+  posg = c(1, 2, 2, 3, 4, 5, 6, 5, 6, 7), # forces YSF and YSF2 to occur together
+  post.bp = post.bp,
+  sd.bp = sd.bp,
+  post.bg = post.bg,
+  sd.bg = sd.bg 
 )
 
 params<-c("mean.p11", "p11.b", "eps.p11", "sig.p11",
@@ -202,7 +236,7 @@ Y.inits[is.na(dat.conv$Y)] <- 1
 inits <- function()list ( 
   Y = Y.inits,
   z = z.inits,
-  muZ= ifelse(occ1>0, 0.1, 0.8), 
+  muZ= ifelse(z.inits>0, 0.1, 0.8), 
   p10 = array(runif(datl$nsite*datl$nvisit*datl$nyear, 0.001, 0.1), dim=c(datl$nsite,datl$nvisit,datl$nyear)),
   p11 = array(runif(datl$nsite*datl$nvisit*datl$nyear, 0.3, 0.7), dim=c(datl$nsite,datl$nvisit,datl$nyear)),
   b = array(runif(datl$nsite*datl$nvisit*datl$nyear, 0.5, 0.99), dim=c(datl$nsite,datl$nvisit,datl$nyear)),
@@ -216,7 +250,7 @@ inits <- function()list (
   mean.gamma= runif(1),
   mean.phi=runif(1),
   phi.alpha= runif(6, -5, 5),
-  gam.alpha= runif(7, -5, 5),
+  gam.alpha= runif(9, -5, 5),
   sig.p10=runif(1),
   sig.p11=runif(1),
   sig.b=runif(1),
@@ -230,12 +264,21 @@ inits <- function()list (
   wp= rbinom(n=7, size=1, prob=1),
   wg= rbinom(n=7, size=1, prob=1),
   bp.sig=100,
-  bg.sig=100
+  bg.sig=100,
+  gamma= array(runif(datl$nsite*(datl$nyear-1), 0, 1), dim=c(datl$nsite,datl$nyear-1)),
+  phi= array(runif(datl$nsite*(datl$nyear-1), 0, 1), dim=c(datl$nsite,datl$nyear-1)),
+  psi= runif(datl$nyear, 0, 1),
+  gam.est=runif(datl$nyear-1, 0, 1),
+  phi.est=runif(datl$nyear-1, 0, 1),
+  growthr=runif(datl$nyear-1, 0.95, 1.05),
+  turnover=runif(datl$nyear-1, 0, 1), 
+  wgtemp = rep(1, 10),
+  wptemp = rep(1, 7)
 ) 
+n.chains=6; n.thin=200; n.iter=600000; n.burnin=400000
+# n.chains=3; n.thin=1; n.iter=5000; n.burnin=100 # trial runs
 
-n.chains=3; n.thin=200; n.iter=600000; n.burnin=400000
-#n.chains=3; n.thin=1; n.iter=400; n.burnin=200 # trial runs
-
+mod <- list()
 mod<- nimbleModel(code, calculate=T, constants = datl[-1], 
                   data = list(Y=datl$Y), inits = inits())
 
@@ -255,6 +298,5 @@ out <- nimbleMCMC(
 )
 
 flnm <- paste("/scratch/brolek/fgsp_misclass/outputs/",m, "_", Sys.Date(), ".Rdata", sep="")
-#  flnm <- paste("C:\\Users\\rolek.brian\\Documents\\Projects\\FGSP Misclassification\\FINAL\\", m, "_", Sys.Date(), ".Rdata", sep="")
 save(out, mod, file=flnm)
 

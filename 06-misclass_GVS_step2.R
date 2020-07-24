@@ -1,7 +1,7 @@
 m <- "06-misclass_GVS_step2"
 library (nimble)
 load("/scratch/brolek/fgsp_misclass/data/final-data.Rdata")
-load("/scratch/brolek/fgsp_misclass/outputs/05-misclass_GVS_step1_2020-06-15.Rdata")
+load("/scratch/brolek/fgsp_misclass/outputs/05-misclass_GVS_step1_2020-07-24.Rdata")
 outg <- out
 rm(list="out")
 
@@ -63,6 +63,7 @@ code <- nimbleCode(
     wg[2] ~ dbern(p.wg2)
     wg[1] ~ dbern(1)
     wgtemp[1] <- wg[1]
+    #   posg = c(1, 2, 2, 3, 4, 5, 6, 5, 6, 7), for reference
     
     # set up the vectors/matrices for beta estimation, abundance
     for(b1 in 2:n.betasp){
@@ -90,10 +91,10 @@ code <- nimbleCode(
       } # b2
       gam.alpha[b1] ~ T(dnorm(mean.bg[b1], sd=sig.bg[b1,b1]), -30, 30)   # all beta coefficients
     } # b1
-    #wgtemp[7] <- 1 
-    wgtemp[8] <- wg[7]
-    mean.siggam <- post.bg[8]*(1-wgtemp[8]) 
-    sd.siggam <- sd.bg[8]*(1-wgtemp[8]) + (wgtemp[8]*bg.siggam)
+    #wgtemp[10] <- 1 
+    wgtemp[10] <- wg[7]
+    mean.siggam <- post.bg[10]*(1-wgtemp[10]) 
+    sd.siggam <- sd.bg[10]*(1-wgtemp[10]) + (wgtemp[10]*bg.siggam)
     sig.gam ~ T(dnorm(mean.siggam, sd=sd.siggam), 0, )
     bg.siggam <- 10
     ## LIKELIHOOD
@@ -132,9 +133,11 @@ code <- nimbleCode(
           wgtemp[2] * gam.alpha[2] * YSF.std[i,t, 5 ] + wgtemp[3] * gam.alpha[3] * YSF.std[i,t, 5 ]^2 +
           wgtemp[4] * gam.alpha[4] * sin(SEAS[i,t, 1 ]*2*3.1416) + 
           wgtemp[5] * gam.alpha[5] * cos(SEAS[i,t, 1 ]*2*3.1416) +
-          wgtemp[6] * gam.alpha[6] * sin(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 5 ] * YSF.std[i,t, 5 ]^2 +
-          wgtemp[7] * gam.alpha[7] * cos(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 5 ] * YSF.std[i,t, 5 ]^2 +
-          wgtemp[8] * eps.gam[t-1]
+          wgtemp[6] * gam.alpha[6] * sin(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 5 ] +
+          wgtemp[7] * gam.alpha[7] * cos(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 5 ] +
+          wgtemp[8] * gam.alpha[8] * sin(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 5 ] * YSF.std[i,t, 5 ]^2 +
+          wgtemp[9] * gam.alpha[9] * cos(SEAS[i,t, 1 ]*2*3.1416) * YSF.std[i,t, 5 ] * YSF.std[i,t, 5 ]^2 +
+          wgtemp[10] * eps.gam[t-1]
         } # t nyear 
       
       for (t in 1:nyear){
@@ -172,7 +175,10 @@ extr <- function (mod, var){
   mat1 <- as.matrix(outg$samples$chain1[,col.ind])
   mat2 <- as.matrix(outg$samples$chain2[,col.ind])
   mat3 <- as.matrix(outg$samples$chain3[,col.ind])
-  all <- rbind(mat1, mat2, mat3) 
+  mat4 <- as.matrix(outg$samples$chain4[,col.ind])
+  mat5 <- as.matrix(outg$samples$chain5[,col.ind])
+  mat6 <- as.matrix(outg$samples$chain6[,col.ind])
+  all <- rbind(mat1, mat2, mat3, mat4, mat5, mat6) 
   print(colnames(all))
   return(all)
 }
@@ -182,6 +188,15 @@ pa <- extr(outg, "phi.alpha")
 pa.sig <- extr(outg, "sig.phi")
 pg <- extr(outg, "gam.alpha")
 pg.sig <- extr(outg, "sig.gam")
+post.bp <-  c(apply(pa, 2, mean), mean(pa.sig))
+sd.bp <-  c(apply(pa, 2, sd), sd(pa.sig))
+post.bg <-  c(apply(pg, 2, mean), mean(pg.sig))
+sd.bg <- c(apply(pg, 2, sd), sd(pg.sig))
+
+# post.bp <-  c(rep(0, 6), 0)
+# sd.bp <-  c(rep(100, 6), 10)
+# post.bg <-  c(rep(0, 10), 0)
+# sd.bg <-  c(rep(100, 10), 10)
 
 datl <- list(
   Y=dat.conv$Y,
@@ -195,13 +210,13 @@ datl <- list(
   nYSF= dim(YSF)[[3]],
   nSEAS= dim(SEAS)[[3]], 
   n.betasp = 6,
-  n.betasg = 6,
+  n.betasg = 9,
   posp = c(1, 2, 3, 4, 5, 6), 
-  posg = c(1, 2, 2, 3, 4, 5, 6),
-  post.bp = c(apply(pa, 2, mean), mean(pa.sig)),
-  sd.bp = c(apply(pa, 2, sd), sd(pa.sig)),
-  post.bg = c(apply(pg, 2, mean), mean(pg.sig)),
-  sd.bg = c(apply(pg, 2, sd), sd(pg.sig)) 
+  posg = c(1, 2, 2, 3, 4, 5, 6, 5, 6, 7), # forces YSF and YSF2 to occur together
+  post.bp = post.bp,
+  sd.bp = sd.bp,
+  post.bg = post.bg,
+  sd.bg = sd.bg 
 )
 
 params<-c("mean.p11", "p11.b", "eps.p11", "sig.p11",
@@ -238,7 +253,7 @@ inits <- function()list (
   mean.gamma= runif(1),
   mean.phi=runif(1),
   phi.alpha= runif(6, -5, 5),
-  gam.alpha= runif(7, -5, 5),
+  gam.alpha= runif(9, -5, 5),
   sig.p10=runif(1),
   sig.p11=runif(1),
   sig.b=runif(1),
@@ -260,11 +275,11 @@ inits <- function()list (
   phi.est=runif(datl$nyear-1, 0, 1),
   growthr=runif(datl$nyear-1, 0.95, 1.05),
   turnover=runif(datl$nyear-1, 0, 1), 
-  wgtemp = rep(1, 8),
+  wgtemp = rep(1, 10),
   wptemp = rep(1, 7)
 ) 
 n.chains=6; n.thin=200; n.iter=600000; n.burnin=400000
-#n.chains=3; n.thin=1; n.iter=5000; n.burnin=100 # trial runs
+# n.chains=3; n.thin=1; n.iter=5000; n.burnin=100 # trial runs
 
 mod <- list()
 mod<- nimbleModel(code, calculate=T, constants = datl[-1], 
