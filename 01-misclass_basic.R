@@ -1,3 +1,4 @@
+## ---- basic --------
 m <- "misclass_basic"
 library (nimble)
 load("./final-data.Rdata")

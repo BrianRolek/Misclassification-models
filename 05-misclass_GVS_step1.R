@@ -1,3 +1,4 @@
+## ---- global model --------
 m <- "05-misclass_GVS_step1"
 library (nimble)
 load("/scratch/brolek/fgsp_misclass/data/final-data.Rdata")

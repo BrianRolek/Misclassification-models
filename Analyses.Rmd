@@ -1,0 +1,59 @@
+---
+title: "Analyses"
+author: "Brian W. Rolek"
+date: "May 11, 2021"
+output:
+  html_document:
+    df_print: paged
+    toc: yes
+  github_document:
+    toc: yes
+---
+
+<style type="text/css">
+  body{
+  font-size: 16pt;
+}
+</style>
+
+# 1. Misclassification Model without Covariates
+```{r, include=FALSE, cache=FALSE}
+knitr::read_chunk('01-misclass_basic.R')
+```
+```{r, basic, eval=FALSE}
+```
+
+# 2. Misclassification Model Including All Covariates for Detection  
+```{r, include=FALSE, cache=FALSE}
+knitr::read_chunk('02-misclass_global_detection.R')
+```
+```{r, global detection, eval=FALSE}
+```
+
+# 3. Misclassification Model with BLISS to Select Appropriate Spatial Scales and Summary Statistics 
+```{r, include=FALSE, cache=FALSE}
+knitr::read_chunk('03-misclass_BLISS.R')
+```
+```{r, BLISS, eval=FALSE}
+```
+
+# 4. Calculate Prior Probabilities for Gibbs Variable Selection
+```{r, include=FALSE, cache=FALSE}
+knitr::read_chunk('04-model-probs-for-priors-GVS.R')
+```
+```{r, prior probs, eval=FALSE}
+```
+
+# 5. Run Global Misclassification Model for Gibbs Variable Selection
+```{r, include=FALSE, cache=FALSE}
+knitr::read_chunk('05-misclass_GVS_step1.R')
+```
+```{r, global model, eval=FALSE}
+```
+
+# 6. Run Misclassification Model with Gibbs Variable Selection
+```{r, include=FALSE, cache=FALSE}
+knitr::read_chunk('06-misclass_GVS_step2.R')
+```
+```{r, gibbs variable selection, eval=FALSE}
+```

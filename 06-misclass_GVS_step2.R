@@ -1,3 +1,4 @@
+## ---- gibbs variable selection --------
 m <- "06-misclass_GVS_step2"
 library (nimble)
 load("/scratch/brolek/fgsp_misclass/data/final-data.Rdata")

@@ -1,3 +1,4 @@
+## ---- prior probs --------
 library(MuMIn)
 load( "C:\\Users\\rolek.brian\\Documents\\Projects\\FGSP Misclassification\\Data\\final-data.Rdata")
 

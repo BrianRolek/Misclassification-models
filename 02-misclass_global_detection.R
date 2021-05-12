@@ -1,3 +1,4 @@
+## ---- global detection --------
 m <- "misclass_global_detection"
 library (nimble)
 #load( "C:\\Users\\rolek.brian\\Documents\\Projects\\FGSP Misclassification\\Data\\final-data.Rdata")
