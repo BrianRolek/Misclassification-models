@@ -1,6 +1,11 @@
 ---
 title: "Analyses"
 author: "Brian W. Rolek"
+knit: (function(input_file, encoding) {
+  out_dir <- 'docs';
+  rmarkdown::render(input_file,
+ encoding=encoding,
+ output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
 date: "May 11, 2021"
 output:
   html_document:
@@ -15,6 +20,9 @@ output:
   font-size: 16pt;
 }
 </style>
+Supplemental materials for:
+Larned, A. F., B. W. Rolek, K. Silaphone, S. Pruett, R. Bowman, B. Lohr. 2021. Dynamic misclassification models to estimate occupancy after prescribed fires for an Endangered passerine, the Florida Grasshopper Sparrow.
+
 
 # 1. Misclassification Model without Covariates
 ```{r, include=FALSE, cache=FALSE}
