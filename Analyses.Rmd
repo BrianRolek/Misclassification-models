@@ -23,22 +23,24 @@ output:
 Supplemental materials for:
 Larned, A. F., B. W. Rolek, K. Silaphone, S. Pruett, R. Bowman, B. Lohr. 2021. Dynamic misclassification models to estimate occupancy after prescribed fires for an Endangered passerine, the Florida Grasshopper Sparrow.
 
+All analyses use occupancy models that account for misclassification and detection probability. 
 
-# 1. Misclassification Model without Covariates
+# 1. Basic Model Without Covariates
 ```{r, include=FALSE, cache=FALSE}
 knitr::read_chunk('01-misclass_basic.R')
 ```
 ```{r, basic, eval=FALSE}
 ```
 
-# 2. Misclassification Model Including All Covariates for Detection  
+# 2. Global Detection Model Including All Covariates for Detection  
 ```{r, include=FALSE, cache=FALSE}
 knitr::read_chunk('02-misclass_global_detection.R')
 ```
 ```{r, global detection, eval=FALSE}
 ```
 
-# 3. Misclassification Model with BLISS to Select Appropriate Spatial Scales and Summary Statistics 
+# 3. BLISS to Select Appropriate Spatial Scales and Summary Statistics  
+Bayesian latent indicator scale selection (BLISS)
 ```{r, include=FALSE, cache=FALSE}
 knitr::read_chunk('03-misclass_BLISS.R')
 ```
@@ -52,14 +54,14 @@ knitr::read_chunk('04-model-probs-for-priors-GVS.R')
 ```{r, prior probs, eval=FALSE}
 ```
 
-# 5. Run Global Misclassification Model for Gibbs Variable Selection
+# 5. Run Global Model to Obtain Estimates for Gibbs Variable Selection (step 1)
 ```{r, include=FALSE, cache=FALSE}
 knitr::read_chunk('05-misclass_GVS_step1.R')
 ```
 ```{r, global model, eval=FALSE}
 ```
 
-# 6. Run Misclassification Model with Gibbs Variable Selection
+# 6. Run Model with Gibbs Variable Selection (step 2)
 ```{r, include=FALSE, cache=FALSE}
 knitr::read_chunk('06-misclass_GVS_step2.R')
 ```
