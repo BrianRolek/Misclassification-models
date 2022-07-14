@@ -6,7 +6,7 @@ knit: (function(input_file, encoding) {
   rmarkdown::render(input_file,
  encoding=encoding,
  output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
-date: "May 11, 2021"
+date: "14 July 2022"
 output:
   html_document:
     df_print: paged
@@ -21,9 +21,9 @@ output:
 }
 </style>
 Supplemental materials for:
-Larned, A. F., B. W. Rolek, K. Silaphone, S. Pruett, R. Bowman, B. Lohr. 2021. Dynamic misclassification models to estimate occupancy after prescribed fires for an Endangered passerine, the Florida Grasshopper Sparrow.
+Larned, A. F., B. W. Rolek, K. Silaphone, S. Pruett, R. Bowman, B. Lohr. 2022. Habitat use and dynamics of an Endangered passerine, the Florida Grasshopper Sparrow (Ammodramus savannarum floridanus), after prescribed fires.
 
-All analyses use occupancy models that account for misclassification and detection probability. 
+All analyses use occupancy models that account for misclassification and detection probability. Models were implemented in R and bayesian software NIMBLE.  
 
 # 1. Basic Model Without Covariates
 ```{r, include=FALSE, cache=FALSE}
