@@ -1,10 +1,7 @@
 ## ---- global model --------
 m <- "05-misclass_GVS_step1"
 library (nimble)
-load("/scratch/brolek/fgsp_misclass/data/final-data.Rdata")
-#load("/scratch/brolek/fgsp_misclass/outputs/05-misclass_GVS_step1_2020-06-21.Rdata")
-#outg <- out
-rm(list="out")
+load(".\\data\\final-data.Rdata")
 
 code <- nimbleCode(
   {
@@ -181,16 +178,6 @@ extr <- function (mod, var){
   return(all)
 }
 
-# extract samples
-# pa <- extr(outg, "phi.alpha")
-# pa.sig <- extr(outg, "sig.phi")
-# pg <- extr(outg, "gam.alpha")
-# pg.sig <- extr(outg, "sig.gam")
-# post.bp <-  c(apply(pa, 2, mean), mean(pa.sig))
-# sd.bp <-  c(apply(pa, 2, sd), sd(pa.sig))
-# post.bg <-  c(apply(pg, 2, mean), mean(pg.sig))
-# sd.bg <- c(apply(pg, 2, sd), sd(pg.sig))
-
 post.bp <-  c(rep(0, 6), 0)
 sd.bp <-  c(rep(100, 6), 10)
 post.bg <-  c(rep(0, 10), 0)
@@ -221,9 +208,9 @@ params<-c("mean.p11", "p11.b", "eps.p11", "sig.p11",
           "mean.b", "b.b", "eps.b", "sig.b",
           "mean.p10", "p10.b", "eps.p10", "sig.p10",
           "psi.b", 
-          "mean.phi", "phi.alpha", "eps.phi", "sig.phi", "phi.est",
-          "mean.gamma",  "gam.alpha", "eps.gam", "sig.gam", "gam.est",
-          "psi", "n.occ", "growthr", "turnover", 
+          "mean.phi", "phi.alpha", "eps.phi", "sig.phi", 
+          "mean.gamma",  "gam.alpha", "eps.gam", "sig.gam", 
+          "psi", "n.occ", 
           "wg", "wp", "wgtemp", "wptemp",
           "z")
 
@@ -298,6 +285,6 @@ out <- nimbleMCMC(
   samples=T
 )
 
-flnm <- paste("/scratch/brolek/fgsp_misclass/outputs/",m, "_", Sys.Date(), ".Rdata", sep="")
-save(out, mod, file=flnm)
+#flnm <- paste(".\\outputs\\",m, "_", Sys.Date(), ".Rdata", sep="")
+#save(out, mod, file=flnm)
 

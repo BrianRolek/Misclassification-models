@@ -1,7 +1,6 @@
 ## ---- BLISS --------
 library (nimble)
-load("/scratch/brolek/fgsp_misclass/data/final-data.Rdata")
-#load( "C:\\Users\\rolek.brian\\Documents\\Projects\\FGSP Misclassification\\FINAL\\final-data.Rdata")
+load(".\\data\\final-data.Rdata")
 code <- nimbleCode(
   {
     ## PRIORS 
@@ -169,6 +168,7 @@ z.inits <- ifelse(maxstates>1, 1, 0)
 z.inits[is.na(z.inits)] <- 0
 Y.inits <- array(NA, dim=dim(dat.conv$Y))
 Y.inits[is.na(dat.conv$Y)] <- 1
+occ1 <- apply(datl$Y, c(1,3), sum)
 
 inits <- function()list ( 
   Y = Y.inits,
@@ -206,7 +206,6 @@ inits <- function()list (
 ) 
 
 n.chains=3; n.thin=200; n.iter=600000; n.burnin=400000
-#n.chains=3; n.thin=1; n.iter=200; n.burnin=100
 mod<- nimbleModel(code, calculate=T, constants = datl[-1], 
                   data = list(Y=datl$Y), inits = inits())
 
@@ -225,6 +224,6 @@ out <- nimbleMCMC(
   samples=T
 )
 
-flnm <- paste("/scratch/brolek/fgsp_misclass/outputs/misclass-BLISS_", Sys.Date(), ".Rdata", sep="")
-save(out, file=flnm)
+# flnm <- paste(".\\outputs\\misclass-BLISS_", Sys.Date(), ".Rdata", sep="")
+# save(out, file=flnm)
 

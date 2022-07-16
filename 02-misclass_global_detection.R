@@ -1,8 +1,7 @@
 ## ---- global detection --------
 m <- "misclass_global_detection"
 library (nimble)
-#load( "C:\\Users\\rolek.brian\\Documents\\Projects\\FGSP Misclassification\\Data\\final-data.Rdata")
-load("/scratch/brolek/fgsp_misclass/data/final-data.Rdata")
+load(".\\data\\final-data.Rdata")
 
 code <- nimbleCode(
   {
@@ -103,6 +102,7 @@ z.inits <- ifelse(maxstates>1, 1, 0)
 z.inits[is.na(z.inits)] <- 0
 Y.inits <- array(NA, dim=dim(dat.conv$Y))
 Y.inits[is.na(dat.conv$Y)] <- 1
+occ1 <- apply(datl$Y, c(1,3), sum)
 
 inits <- function()list ( 
   Y = Y.inits,
@@ -131,7 +131,6 @@ inits <- function()list (
   eps.b = runif((datl$nyear), -0.1, 0.1)
 ) 
 n.chains=3; n.thin=200; n.iter=600000; n.burnin=400000
-#n.chains=3; n.thin=1; n.iter=1000; n.burnin=100 # trial runs
 
 mod <- list()
 mod<- nimbleModel(code, calculate=T, constants = datl[-1], 
@@ -152,6 +151,6 @@ out <- nimbleMCMC(
   samples=T
 )
 
-flnm <- paste("/scratch/brolek/fgsp_misclass/outputs/",m, "_", Sys.Date(), ".Rdata", sep="")
-save(out, mod, file=flnm)
+# flnm <- paste(".\\outputs\\",m, "_", Sys.Date(), ".Rdata", sep="")
+# save(out, mod, file=flnm)
 

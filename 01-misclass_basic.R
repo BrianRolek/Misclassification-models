@@ -1,7 +1,7 @@
 ## ---- basic --------
 m <- "misclass_basic"
 library (nimble)
-load("./final-data.Rdata")
+load(".\\data\\final-data.Rdata")
 
 code <- nimbleCode(
   {
@@ -90,6 +90,7 @@ z.inits <- ifelse(maxstates>1, 1, 0)
 z.inits[is.na(z.inits)] <- 0
 Y.inits <- array(NA, dim=dim(dat.conv$Y))
 Y.inits[is.na(dat.conv$Y)] <- 1
+occ1 <- apply(datl$Y, c(1,3), sum)
 
 inits <- function()list ( 
   Y = Y.inits,
@@ -112,7 +113,6 @@ inits <- function()list (
   gam.alpha= runif(1, -5, 5)
 ) 
 n.chains=3; n.thin=200; n.iter=600000; n.burnin=400000
-#n.chains=3; n.thin=1; n.iter=1000; n.burnin=100 # trial runs
 
 mod <- list()
 mod<- nimbleModel(code, calculate=T, constants = datl[-1], 
@@ -133,6 +133,6 @@ out <- nimbleMCMC(
   samples=T
 )
 
-flnm <- paste("./",m, "_", Sys.Date(), ".Rdata", sep="")
-save(out, mod, file=flnm)
+#flnm <- paste(".\\",m, "_", Sys.Date(), ".Rdata", sep="")
+#save(out, mod, file=flnm)
 

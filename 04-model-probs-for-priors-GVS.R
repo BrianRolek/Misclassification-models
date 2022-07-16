@@ -1,6 +1,6 @@
 ## ---- prior probs --------
 library(MuMIn)
-load( "C:\\Users\\rolek.brian\\Documents\\Projects\\FGSP Misclassification\\Data\\final-data.Rdata")
+load( ".\\data\\final-data.Rdata")
 
 vars <- c("eps.phi", "YSF.std","sin.SEAS", "cos.SEAS")
 tf <- c(TRUE, FALSE)

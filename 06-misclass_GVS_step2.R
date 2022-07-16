@@ -1,8 +1,8 @@
 ## ---- gibbs variable selection --------
 m <- "06-misclass_GVS_step2"
 library (nimble)
-load("/scratch/brolek/fgsp_misclass/data/final-data.Rdata")
-load("/scratch/brolek/fgsp_misclass/outputs/05-misclass_GVS_step1_2020-07-24.Rdata")
+load(".\\data\\final-data.Rdata")
+load(".\\outputs\\05-misclass_GVS_step1_2020-07-24.Rdata")
 outg <- out
 rm(list="out")
 
@@ -301,6 +301,6 @@ mod<- nimbleModel(code, calculate=T, constants = datl[-1],
     samples=T
   )
   
-flnm <- paste("/scratch/brolek/fgsp_misclass/outputs/",m, "_", Sys.Date(), ".Rdata", sep="")
-save(out, mod, file=flnm)
+# flnm <- paste(".\\outputs\\",m, "_", Sys.Date(), ".Rdata", sep="")
+# save(out, mod, file=flnm)
 
