@@ -1,3 +1,4 @@
+## GVS step 1
 ## ---- prior probs --------
 library(MuMIn)
 load( ".\\data\\final-data.Rdata")

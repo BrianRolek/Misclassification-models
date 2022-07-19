@@ -1642,37 +1642,59 @@ pre code {
 
 <div id="TOC">
 <ul>
-<li><a href="#basic-model-without-covariates">1. Basic Model Without
+<li><a href="#metadata">1. Metadata</a></li>
+<li><a href="#basic-model-without-covariates">2. Basic Model Without
 Covariates</a></li>
-<li><a href="#global-detection-model-including-all-covariates-for-detection">2.
+<li><a href="#global-detection-model-including-all-covariates-for-detection">3.
 Global Detection Model Including All Covariates for Detection</a></li>
-<li><a href="#bliss-to-select-appropriate-spatial-scales-and-summary-statistics">3.
-BLISS to Select Appropriate Spatial Scales and Summary
-Statistics</a></li>
-<li><a href="#calculate-prior-probabilities-for-gibbs-variable-selection">4.
-Calculate Prior Probabilities for Gibbs Variable Selection</a></li>
-<li><a href="#run-global-model-to-obtain-estimates-for-gibbs-variable-selection-step-1">5.
-Run Global Model to Obtain Estimates for Gibbs Variable Selection (step
+<li><a href="#bliss-to-select-appropriate-spatial-scales-and-summary-statistics-of-covariates">4.
+BLISS to Select Appropriate Spatial Scales and Summary Statistics of
+Covariates</a></li>
+<li><a href="#calculate-prior-probabilities-for-gibbs-variable-selection-gvs-step-1">5.
+Calculate Prior Probabilities for Gibbs Variable Selection (GVS step
 1)</a></li>
-<li><a href="#run-model-with-gibbs-variable-selection-step-2">6. Run
-Model with Gibbs Variable Selection (step 2)</a></li>
+<li><a href="#run-global-model-to-obtain-estimates-for-gibbs-variable-selection-gvs-step-2">6.
+Run Global Model to Obtain Estimates for Gibbs Variable Selection (GVS
+step 2)</a></li>
+<li><a href="#run-model-with-gibbs-variable-selection-gvs-step-3">7. Run
+Model with Gibbs Variable Selection (GVS step 3)</a></li>
 </ul>
 </div>
 
 <style type="text/css">
   body{
-  font-size: 16pt;
+  font-size: 14pt;
 }
 </style>
+<p>Contact author: brianrolek at gmail.com.</p>
 <p>Supplemental materials for: Larned, A. F., B. W. Rolek, K. Silaphone,
 S. Pruett, R. Bowman, B. Lohr. 2022. Habitat use and dynamics of an
 Endangered passerine, the Florida Grasshopper Sparrow (Ammodramus
 savannarum floridanus), after prescribed fires.</p>
-<p>All analyses use occupancy models that account for misclassification
-and detection probability. Models were implemented in R and bayesian
-software NIMBLE.</p>
+<p>We used dynamic occupancy models that accounted for
+misclassifications and detection probability. We implemented Models in R
+and Bayesian software NIMBLE.</p>
+<div id="metadata" class="section level1">
+<h1>1. Metadata</h1>
+<p>Metadata associated with the file “data-final.Rdata”. Once loaded
+into R, this file contains the object “dat.conv”, a list containing data
+for input into the JAGS model. Data fields include:</p>
+<ul>
+<li>Y = Observed states: 1 = no detection, 2 = uncertain detection, 3 =
+certain detection. A matrix of dimensions nsite x nvisit x nyear.</li>
+<li>nsite = The number of sites surveyed at Avon Park and retained for
+analyses.</li>
+<li>nvisit = The maximum number of survey visits within breeding
+seasons.</li>
+<li>nyear = The total number of years of surveys.</li>
+<li>date = The date during each survey visit. A matrix of dimensions
+nsite x nvisit x nyear.</li>
+<li>hr = Time after civil dawn during the start of each survey visit. A
+matrix of dimensions nsite x nvisit x nyear.</li>
+</ul>
+</div>
 <div id="basic-model-without-covariates" class="section level1">
-<h1>1. Basic Model Without Covariates</h1>
+<h1>2. Basic Model Without Covariates</h1>
 <pre class="r"><code>m &lt;- &quot;misclass_basic&quot;
 library (nimble)
 load(&quot;.\\data\\final-data.Rdata&quot;)
@@ -1811,7 +1833,7 @@ out &lt;- nimbleMCMC(
 #save(out, mod, file=flnm)</code></pre>
 </div>
 <div id="global-detection-model-including-all-covariates-for-detection" class="section level1">
-<h1>2. Global Detection Model Including All Covariates for
+<h1>3. Global Detection Model Including All Covariates for
 Detection</h1>
 <pre class="r"><code>m &lt;- &quot;misclass_global_detection&quot;
 library (nimble)
@@ -1839,9 +1861,9 @@ code &lt;- nimbleCode(
       eps.p10[t] ~ dnorm(0, sd=sig.p10) 
       eps.p11[t] ~ dnorm(0, sd=sig.p11)
       eps.b[t] ~ dnorm(0, sd=sig.b)} # t 
-    sig.p10 ~ T(dnorm(0,10),0, )
-    sig.p11 ~ T(dnorm(0,10),0, )
-    sig.b ~ T(dnorm(0,10),0, )
+    sig.p10 ~ T(dnorm(0,sd=10),0, )
+    sig.p11 ~ T(dnorm(0,sd=10),0, )
+    sig.b ~ T(dnorm(0,sd=10),0, )
     
     ## LIKELIHOOD
     ## first year
@@ -1968,9 +1990,9 @@ out &lt;- nimbleMCMC(
 # flnm &lt;- paste(&quot;.\\outputs\\&quot;,m, &quot;_&quot;, Sys.Date(), &quot;.Rdata&quot;, sep=&quot;&quot;)
 # save(out, mod, file=flnm)</code></pre>
 </div>
-<div id="bliss-to-select-appropriate-spatial-scales-and-summary-statistics" class="section level1">
-<h1>3. BLISS to Select Appropriate Spatial Scales and Summary
-Statistics</h1>
+<div id="bliss-to-select-appropriate-spatial-scales-and-summary-statistics-of-covariates" class="section level1">
+<h1>4. BLISS to Select Appropriate Spatial Scales and Summary Statistics
+of Covariates</h1>
 <p>Bayesian latent indicator scale selection (BLISS)</p>
 <pre class="r"><code>library (nimble)
 load(&quot;.\\data\\final-data.Rdata&quot;)
@@ -2001,9 +2023,9 @@ code &lt;- nimbleCode(
       eps.p10[t] ~ dnorm(0, sd=sig.p10) 
       eps.p11[t] ~ dnorm(0, sd=sig.p11)
       eps.b[t] ~ dnorm(0, sd=sig.b)} # t 
-    sig.p10 ~ T(dnorm(0,10),0, )
-    sig.p11 ~ T(dnorm(0,10),0, )
-    sig.b ~ T(dnorm(0,10),0, )
+    sig.p10 ~ T(dnorm(0,sd=10),0, )
+    sig.p11 ~ T(dnorm(0,sd=10),0, )
+    sig.b ~ T(dnorm(0,sd=10),0, )
     bliss[1] ~ dcat( priors1[1:12] )
     bliss[3] ~ dcat( priors3[1:12] )
     for (jj in 1:12){
@@ -2200,8 +2222,9 @@ out &lt;- nimbleMCMC(
 # flnm &lt;- paste(&quot;.\\outputs\\misclass-BLISS_&quot;, Sys.Date(), &quot;.Rdata&quot;, sep=&quot;&quot;)
 # save(out, file=flnm)</code></pre>
 </div>
-<div id="calculate-prior-probabilities-for-gibbs-variable-selection" class="section level1">
-<h1>4. Calculate Prior Probabilities for Gibbs Variable Selection</h1>
+<div id="calculate-prior-probabilities-for-gibbs-variable-selection-gvs-step-1" class="section level1">
+<h1>5. Calculate Prior Probabilities for Gibbs Variable Selection (GVS
+step 1)</h1>
 <pre class="r"><code>library(MuMIn)
 load( &quot;.\\data\\final-data.Rdata&quot;)
 
@@ -2334,10 +2357,10 @@ wg.priors[[6]] &lt;- apply(eg[, c(&quot;YSF:cos.SEAS&quot;, &quot;YSF2:cos.SEAS&
 wg.priors[[7]] &lt;- mean(eg[sub3, c(&quot;eps.gam&quot;)])
 wg.priors</code></pre>
 </div>
-<div id="run-global-model-to-obtain-estimates-for-gibbs-variable-selection-step-1" class="section level1">
-<h1>5. Run Global Model to Obtain Estimates for Gibbs Variable Selection
-(step 1)</h1>
-<pre class="r"><code>m &lt;- &quot;05-misclass_GVS_step1&quot;
+<div id="run-global-model-to-obtain-estimates-for-gibbs-variable-selection-gvs-step-2" class="section level1">
+<h1>6. Run Global Model to Obtain Estimates for Gibbs Variable Selection
+(GVS step 2)</h1>
+<pre class="r"><code>m &lt;- &quot;05-misclass_GVS_step2&quot;
 library (nimble)
 load(&quot;.\\data\\final-data.Rdata&quot;)
 
@@ -2626,12 +2649,13 @@ out &lt;- nimbleMCMC(
 #flnm &lt;- paste(&quot;.\\outputs\\&quot;,m, &quot;_&quot;, Sys.Date(), &quot;.Rdata&quot;, sep=&quot;&quot;)
 #save(out, mod, file=flnm)</code></pre>
 </div>
-<div id="run-model-with-gibbs-variable-selection-step-2" class="section level1">
-<h1>6. Run Model with Gibbs Variable Selection (step 2)</h1>
-<pre class="r"><code>m &lt;- &quot;06-misclass_GVS_step2&quot;
+<div id="run-model-with-gibbs-variable-selection-gvs-step-3" class="section level1">
+<h1>7. Run Model with Gibbs Variable Selection (GVS step 3)</h1>
+<pre class="r"><code>m &lt;- &quot;06-misclass_GVS_step3&quot;
 library (nimble)
 load(&quot;.\\data\\final-data.Rdata&quot;)
-load(&quot;.\\outputs\\05-misclass_GVS_step1_2020-07-24.Rdata&quot;)
+# load results from step 2 to use as pseudopriors
+load(&quot;.\\outputs\\05-misclass_GVS_step2_2020-07-24.Rdata&quot;)
 outg &lt;- out
 rm(list=&quot;out&quot;)
 

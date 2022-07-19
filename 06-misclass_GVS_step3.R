@@ -1,8 +1,10 @@
+## GVS step 3
 ## ---- gibbs variable selection --------
-m <- "06-misclass_GVS_step2"
+m <- "06-misclass_GVS_step3"
 library (nimble)
 load(".\\data\\final-data.Rdata")
-load(".\\outputs\\05-misclass_GVS_step1_2020-07-24.Rdata")
+# load results from step 2 to use as pseudopriors
+load(".\\outputs\\05-misclass_GVS_step2_2020-07-24.Rdata")
 outg <- out
 rm(list="out")
 

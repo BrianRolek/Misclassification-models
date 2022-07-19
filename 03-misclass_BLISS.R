@@ -28,9 +28,9 @@ code <- nimbleCode(
       eps.p10[t] ~ dnorm(0, sd=sig.p10) 
       eps.p11[t] ~ dnorm(0, sd=sig.p11)
       eps.b[t] ~ dnorm(0, sd=sig.b)} # t 
-    sig.p10 ~ T(dnorm(0,10),0, )
-    sig.p11 ~ T(dnorm(0,10),0, )
-    sig.b ~ T(dnorm(0,10),0, )
+    sig.p10 ~ T(dnorm(0,sd=10),0, )
+    sig.p11 ~ T(dnorm(0,sd=10),0, )
+    sig.b ~ T(dnorm(0,sd=10),0, )
     bliss[1] ~ dcat( priors1[1:12] )
     bliss[3] ~ dcat( priors3[1:12] )
     for (jj in 1:12){

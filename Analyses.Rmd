@@ -17,29 +17,42 @@ output:
 
 <style type="text/css">
   body{
-  font-size: 16pt;
+  font-size: 14pt;
 }
 </style>
+
+Contact author: brianrolek at gmail.com.
+
 Supplemental materials for:
 Larned, A. F., B. W. Rolek, K. Silaphone, S. Pruett, R. Bowman, B. Lohr. 2022. Habitat use and dynamics of an Endangered passerine, the Florida Grasshopper Sparrow (Ammodramus savannarum floridanus), after prescribed fires.
 
-All analyses use occupancy models that account for misclassification and detection probability. Models were implemented in R and bayesian software NIMBLE.  
+We used dynamic occupancy models that accounted for misclassifications and detection probability. We implemented Models in R and Bayesian software NIMBLE.  
 
-# 1. Basic Model Without Covariates
+# 1. Metadata
+Metadata associated with the file "data\data-final.Rdata". Once loaded into R, this file contains the object "dat.conv", a list containing data for input into the JAGS model. Data fields include: 
+
++ Y = Observed states: 1 = no detection, 2 = uncertain detection, 3 = certain detection. A matrix of dimensions nsite x nvisit x nyear.
++ nsite = The number of sites surveyed at Avon Park and retained for analyses.
++ nvisit = The maximum number of survey visits within breeding seasons.
++ nyear = The total number of years of surveys. 
++ date = The date during each survey visit. A matrix of dimensions nsite x nvisit x nyear.
++ hr = Time after civil dawn during the start of each survey visit. A matrix of dimensions nsite x nvisit x nyear.
+
+# 2. Basic Model Without Covariates
 ```{r, include=FALSE, cache=FALSE}
 knitr::read_chunk('01-misclass_basic.R')
 ```
 ```{r, basic, eval=FALSE}
 ```
 
-# 2. Global Detection Model Including All Covariates for Detection  
+# 3. Global Detection Model Including All Covariates for Detection  
 ```{r, include=FALSE, cache=FALSE}
 knitr::read_chunk('02-misclass_global_detection.R')
 ```
 ```{r, global detection, eval=FALSE}
 ```
 
-# 3. BLISS to Select Appropriate Spatial Scales and Summary Statistics  
+# 4. BLISS to Select Appropriate Spatial Scales and Summary Statistics of Covariates  
 Bayesian latent indicator scale selection (BLISS)
 ```{r, include=FALSE, cache=FALSE}
 knitr::read_chunk('03-misclass_BLISS.R')
@@ -47,23 +60,23 @@ knitr::read_chunk('03-misclass_BLISS.R')
 ```{r, BLISS, eval=FALSE}
 ```
 
-# 4. Calculate Prior Probabilities for Gibbs Variable Selection
+# 5. Calculate Prior Probabilities for Gibbs Variable Selection (GVS step 1)
 ```{r, include=FALSE, cache=FALSE}
-knitr::read_chunk('04-model-probs-for-priors-GVS.R')
+knitr::read_chunk('04-model-probs-for-priors-GVS_step1.R')
 ```
 ```{r, prior probs, eval=FALSE}
 ```
 
-# 5. Run Global Model to Obtain Estimates for Gibbs Variable Selection (step 1)
+# 6. Run Global Model to Obtain Estimates for Gibbs Variable Selection (GVS step 2)
 ```{r, include=FALSE, cache=FALSE}
-knitr::read_chunk('05-misclass_GVS_step1.R')
+knitr::read_chunk('05-misclass_GVS_step2.R')
 ```
 ```{r, global model, eval=FALSE}
 ```
 
-# 6. Run Model with Gibbs Variable Selection (step 2)
+# 7. Run Model with Gibbs Variable Selection (GVS step 3)
 ```{r, include=FALSE, cache=FALSE}
-knitr::read_chunk('06-misclass_GVS_step2.R')
+knitr::read_chunk('06-misclass_GVS_step3.R')
 ```
 ```{r, gibbs variable selection, eval=FALSE}
 ```

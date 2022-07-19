@@ -1,5 +1,6 @@
+## GVS step 2
 ## ---- global model --------
-m <- "05-misclass_GVS_step1"
+m <- "05-misclass_GVS_step2"
 library (nimble)
 load(".\\data\\final-data.Rdata")
 
