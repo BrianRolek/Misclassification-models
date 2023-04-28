@@ -40,14 +40,14 @@ Metadata associated with the file "data\data-final.Rdata". Once loaded into R, t
 
 # 2. Basic Model Without Covariates
 ```{r, include=FALSE, cache=FALSE}
-knitr::read_chunk('01-misclass_basic.R')
+knitr::read_chunk('R//01-misclass_basic.R')
 ```
 ```{r, basic, eval=FALSE}
 ```
 
 # 3. Global Detection Model Including All Covariates for Detection  
 ```{r, include=FALSE, cache=FALSE}
-knitr::read_chunk('02-misclass_global_detection.R')
+knitr::read_chunk('R//02-misclass_global_detection.R')
 ```
 ```{r, global detection, eval=FALSE}
 ```
@@ -55,7 +55,7 @@ knitr::read_chunk('02-misclass_global_detection.R')
 # 4. BLISS to Select Spatial Scales and Summary Statistics of Covariates  
 Bayesian latent indicator scale selection (BLISS)
 ```{r, include=FALSE, cache=FALSE}
-knitr::read_chunk('03-misclass_BLISS.R')
+knitr::read_chunk('R//03-misclass_BLISS.R')
 ```
 ```{r, BLISS, eval=FALSE}
 ```
@@ -64,21 +64,21 @@ knitr::read_chunk('03-misclass_BLISS.R')
 
 ## 5.1. Calculate Prior Probabilities (step 1)
 ```{r, include=FALSE, cache=FALSE}
-knitr::read_chunk('04-model-probs-for-priors-GVS_step1.R')
+knitr::read_chunk('R//04-model-probs-for-priors-GVS_step1.R')
 ```
 ```{r, prior probs, eval=FALSE}
 ```
 
 ## 5.2 Run Global Model to Obtain Estimates for Pseudopriors (step 2)
 ```{r, include=FALSE, cache=FALSE}
-knitr::read_chunk('05-misclass_GVS_step2.R')
+knitr::read_chunk('R//05-misclass_GVS_step2.R')
 ```
 ```{r, global model, eval=FALSE}
 ```
 
 ## 5.3 Run Model with GVS (step 3)
 ```{r, include=FALSE, cache=FALSE}
-knitr::read_chunk('06-misclass_GVS_step3.R')
+knitr::read_chunk('R//06-misclass_GVS_step3.R')
 ```
 ```{r, gibbs variable selection, eval=FALSE}
 ```
