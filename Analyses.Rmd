@@ -52,8 +52,8 @@ knitr::read_chunk('R//02-misclass_global_detection.R')
 ```{r, global detection, eval=FALSE}
 ```
 
-# 4. BLISS to Select Spatial Scales and Summary Statistics of Covariates  
-Bayesian latent indicator scale selection (BLISS)
+# 4. Bayesian latent indicator scale selection (BLISS) to Select Spatial Scales and Summary Statistics of Covariates  
+
 ```{r, include=FALSE, cache=FALSE}
 knitr::read_chunk('R//03-misclass_BLISS.R')
 ```

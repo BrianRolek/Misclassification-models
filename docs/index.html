@@ -1634,9 +1634,9 @@ display: none;
 Covariates</a></li>
 <li><a href="#global-detection-model-including-all-covariates-for-detection" id="toc-global-detection-model-including-all-covariates-for-detection">3.
 Global Detection Model Including All Covariates for Detection</a></li>
-<li><a href="#bliss-to-select-spatial-scales-and-summary-statistics-of-covariates" id="toc-bliss-to-select-spatial-scales-and-summary-statistics-of-covariates">4.
-BLISS to Select Spatial Scales and Summary Statistics of
-Covariates</a></li>
+<li><a href="#bayesian-latent-indicator-scale-selection-bliss-to-select-spatial-scales-and-summary-statistics-of-covariates" id="toc-bayesian-latent-indicator-scale-selection-bliss-to-select-spatial-scales-and-summary-statistics-of-covariates">4.
+Bayesian latent indicator scale selection (BLISS) to Select Spatial
+Scales and Summary Statistics of Covariates</a></li>
 <li><a href="#gibbs-variable-selection-gvs" id="toc-gibbs-variable-selection-gvs">5. Gibb’s Variable Selection
 (GVS)</a>
 <ul>
@@ -1979,10 +1979,9 @@ out &lt;- nimbleMCMC(
 # flnm &lt;- paste(&quot;.\\outputs\\&quot;,m, &quot;_&quot;, Sys.Date(), &quot;.Rdata&quot;, sep=&quot;&quot;)
 # save(out, mod, file=flnm)</code></pre>
 </div>
-<div id="bliss-to-select-spatial-scales-and-summary-statistics-of-covariates" class="section level1">
-<h1>4. BLISS to Select Spatial Scales and Summary Statistics of
-Covariates</h1>
-<p>Bayesian latent indicator scale selection (BLISS)</p>
+<div id="bayesian-latent-indicator-scale-selection-bliss-to-select-spatial-scales-and-summary-statistics-of-covariates" class="section level1">
+<h1>4. Bayesian latent indicator scale selection (BLISS) to Select
+Spatial Scales and Summary Statistics of Covariates</h1>
 <pre class="r"><code>library (nimble)
 load(&quot;.\\data\\final-data.Rdata&quot;)
 code &lt;- nimbleCode(
