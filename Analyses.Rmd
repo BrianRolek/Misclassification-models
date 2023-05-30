@@ -1,12 +1,12 @@
 ---
-title: "Analyses"
+title: "Dynamic Occupancy Model with Detection Probability and Misclassifications"
 author: "Brian W. Rolek"
 knit: (function(input_file, encoding) {
   out_dir <- 'docs';
   rmarkdown::render(input_file,
  encoding=encoding,
  output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
-date: "28 April 2023"
+date: "30 May 2023"
 output:
   html_document:
     df_print: paged
