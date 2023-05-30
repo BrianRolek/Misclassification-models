@@ -27,7 +27,8 @@ Supplemental materials for:
 Larned, A. F., B. W. Rolek, K. Silaphone, S. Pruett, R. Bowman, B. Lohr. 2023. Habitat use and dynamics of an Endangered passerine, the Florida Grasshopper Sparrow (Ammodramus savannarum floridanus), after prescribed fires.
 
 GitHub repository located online at https://github.com/BrianRolek/Misclassification-models
-
+and archived here:
+DOI:10.5281/zenodo.7987218
 
 We used dynamic occupancy models that accounted for misclassifications and detection probability. We implemented Models in R and Bayesian software NIMBLE.  
 
